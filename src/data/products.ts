@@ -1,5 +1,13 @@
 import { Mail, FileInput, MailOpen, FileOutput, HardDrive, FileText, Cpu } from "lucide-react";
 
+export interface LicenseData {
+  name: string;
+  price: number;
+  originalPrice?: number;
+  machines: string;
+  desc: string;
+}
+
 export interface ProductData {
   slug: string;
   title: string;
@@ -12,6 +20,7 @@ export interface ProductData {
   faqs: { q: string; a: string }[];
   systemReqs: string[];
   formats?: string[];
+  licenses: LicenseData[];
 }
 
 export const products: Record<string, ProductData> = {
