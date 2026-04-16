@@ -35,9 +35,11 @@ const ProductPageLayout = ({ product }: { product: ProductData }) => {
                 <Button size="lg" className="accent-gradient text-accent-foreground font-semibold gap-2 hover:opacity-90">
                   <Download className="h-4 w-4" /> Free Download
                 </Button>
-                <Button size="lg" variant="outline" className="border-white/20 text-hero-foreground hover:bg-white/10 gap-2">
-                  Buy Now <ArrowRight className="h-4 w-4" />
-                </Button>
+                <Link to={`/buy/${product.slug}`}>
+                  <Button size="lg" variant="outline" className="border-white/20 text-hero-foreground hover:bg-white/10 gap-2">
+                    Buy Now <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </Link>
               </div>
 
               <div className="mt-6 flex flex-wrap items-center gap-6 text-xs text-hero-muted">
