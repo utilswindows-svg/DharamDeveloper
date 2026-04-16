@@ -120,8 +120,9 @@ const BuyPage = () => {
                     <Button
                       className={`mt-5 w-full font-semibold ${isSelected ? "accent-gradient text-accent-foreground" : ""}`}
                       variant={isSelected ? "default" : "outline"}
+                      asChild
                     >
-                      Buy Now
+                      <Link to={`/checkout/${slug}?license=${i}`}>Buy Now</Link>
                     </Button>
 
                     {/* Radio indicator */}
