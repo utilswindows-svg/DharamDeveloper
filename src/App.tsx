@@ -10,6 +10,7 @@ import HelpCenter from "./pages/HelpCenter.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import ProductPage from "./pages/ProductPage.tsx";
 import BuyPage from "./pages/BuyPage.tsx";
+import CheckoutPage from "./pages/CheckoutPage.tsx";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/help" element={<HelpCenter />} />
           <Route path="/products/:slug" element={<ProductPage />} />
           <Route path="/buy/:slug" element={<BuyPage />} />
+          <Route path="/checkout/:slug" element={<CheckoutPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
