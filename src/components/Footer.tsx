@@ -47,8 +47,27 @@ const Footer = () => (
         </div>
       </div>
 
-      <div className="mt-12 border-t border-hero-muted/20 pt-8 text-center text-xs">
-        © {new Date().getFullYear()} WindowsUtils. All rights reserved.
+      <div className="mt-12 border-t border-hero-muted/20 pt-8 space-y-4">
+        <div className="flex flex-wrap justify-center items-center gap-3 text-xs">
+          <Link to="/eula" className="hover:text-hero-foreground transition-colors">EULA</Link>
+          <span className="text-hero-muted/40">|</span>
+          <Link to="/privacy" className="hover:text-hero-foreground transition-colors">Privacy Statement</Link>
+          <span className="text-hero-muted/40">|</span>
+          <Link to="/refund-policy" className="hover:text-hero-foreground transition-colors">Refund Policy</Link>
+          <span className="text-hero-muted/40">|</span>
+          <Link to="/quality-policy" className="hover:text-hero-foreground transition-colors">Quality Policy</Link>
+        </div>
+        
+        <div className="text-center text-xs leading-relaxed">
+          <p>© Copyright 2007-2026 by WindowsUtils.</p>
+          <p>WindowsUtils® is a Registered Trademark of Windows Utils Pvt. Ltd.</p>
+        </div>
+        
+        <div className="flex justify-center items-center gap-3 text-xs">
+          <Link to="/legal" className="hover:text-hero-foreground transition-colors">Legal</Link>
+          <span className="text-hero-muted/40">|</span>
+          <button className="hover:text-hero-foreground transition-colors">Cookie Preferences</button>
+        </div>
       </div>
     </div>
   </footer>
