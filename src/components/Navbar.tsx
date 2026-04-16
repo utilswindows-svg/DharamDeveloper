@@ -1,0 +1,149 @@
+import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { Menu, X, ChevronDown } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+
+const productLinks = [
+  { name: "MBox to PDF", href: "/products/mbox-to-pdf" },
+  { name: "PST Migration", href: "/products/pst-migration" },
+  { name: "MSG Migration", href: "/products/msg-migration" },
+  { name: "MSG to PDF", href: "/products/msg-to-pdf" },
+  { name: "Data Recovery", href: "/products/data-recovery" },
+  { name: "PDF Tools", href: "/products/pdf-tools" },
+  { name: "PC Optimizer", href: "/products/pc-optimizer" },
+];
+
+const navLinks = [
+  { name: "Home", href: "/" },
+  { name: "About Us", href: "/about" },
+  { name: "Support", href: "/support" },
+  { name: "Help Center", href: "/help" },
+];
+
+const Navbar = () => {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [productsOpen, setProductsOpen] = useState(false);
+  const location = useLocation();
+
+  return (
+    <header className="sticky top-0 z-50 border-b border-border/50 bg-card/95 backdrop-blur-md">
+      {/* Top bar */}
+      <div className="bg-hero text-hero-foreground">
+        <div className="section-container flex items-center justify-end gap-6 py-1.5 text-xs">
+          <Link to="/support" className="text-hero-muted hover:text-hero-foreground transition-colors">Support</Link>
+          <Link to="/about" className="text-hero-muted hover:text-hero-foreground transition-colors">About Us</Link>
+          <Link to="/help" className="text-hero-muted hover:text-hero-foreground transition-colors">Help Center</Link>
+        </div>
+      </div>
+
+      {/* Main nav */}
+      <nav className="section-container flex items-center justify-between py-3">
+        <Link to="/" className="flex items-center gap-2">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg primary-gradient">
+            <span className="text-lg font-bold text-primary-foreground font-heading">W</span>
+          </div>
+          <div>
+            <span className="text-lg font-bold font-heading text-foreground">Windows</span>
+            <span className="text-lg font-bold font-heading text-accent">Utils</span>
+          </div>
+        </Link>
+
+        {/* Desktop */}
+        <div className="hidden lg:flex items-center gap-1">
+          {navLinks.map(link => (
+            <Link
+              key={link.href}
+              to={link.href}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                location.pathname === link.href
+                  ? "text-primary bg-primary/5"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+              }`}
+            >
+              {link.name}
+            </Link>
+          ))}
+
+          {/* Products dropdown */}
+          <div className="relative" onMouseEnter={() => setProductsOpen(true)} onMouseLeave={() => setProductsOpen(false)}>
+            <button className="flex items-center gap-1 px-4 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+              Products <ChevronDown className="h-3.5 w-3.5" />
+            </button>
+            <AnimatePresence>
+              {productsOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 8 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute top-full left-0 mt-1 w-56 rounded-lg border border-border bg-card p-2 shadow-xl"
+                >
+                  {productLinks.map(link => (
+                    <Link
+                      key={link.href}
+                      to={link.href}
+                      className="block rounded-md px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                    >
+                      {link.name}
+                    </Link>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+
+        <div className="hidden lg:flex items-center gap-3">
+          <Link to="/support" className="accent-gradient rounded-lg px-5 py-2.5 text-sm font-semibold text-accent-foreground transition-all hover:opacity-90 hover:shadow-lg">
+            Free Download
+          </Link>
+        </div>
+
+        {/* Mobile toggle */}
+        <button className="lg:hidden p-2" onClick={() => setMobileOpen(!mobileOpen)}>
+          {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+        </button>
+      </nav>
+
+      {/* Mobile menu */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="lg:hidden overflow-hidden border-t border-border bg-card"
+          >
+            <div className="section-container py-4 space-y-1">
+              {navLinks.map(link => (
+                <Link
+                  key={link.href}
+                  to={link.href}
+                  onClick={() => setMobileOpen(false)}
+                  className="block rounded-md px-3 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted"
+                >
+                  {link.name}
+                </Link>
+              ))}
+              <div className="pt-2 border-t border-border">
+                <p className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Products</p>
+                {productLinks.map(link => (
+                  <Link
+                    key={link.href}
+                    to={link.href}
+                    onClick={() => setMobileOpen(false)}
+                    className="block rounded-md px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted"
+                  >
+                    {link.name}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </header>
+  );
+};
+
+export default Navbar;
