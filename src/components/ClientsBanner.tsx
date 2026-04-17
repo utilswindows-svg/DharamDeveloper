@@ -53,11 +53,11 @@ const ClientsBanner = () => {
             return (
               <div
                 key={i}
-                className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/5 backdrop-blur-sm p-6 text-center hover:bg-hero-foreground/10 transition-colors"
+                className="rounded-2xl border border-border bg-card p-6 text-center hover:shadow-lg hover:-translate-y-1 transition-all"
               >
                 <Icon className="h-6 w-6 text-accent mx-auto mb-3" />
-                <div className="text-3xl font-bold font-heading text-hero-foreground mb-1">{s.value}</div>
-                <div className="text-xs text-hero-muted uppercase tracking-wider">{s.label}</div>
+                <div className="text-3xl font-bold font-heading text-foreground mb-1">{s.value}</div>
+                <div className="text-xs text-muted-foreground uppercase tracking-wider">{s.label}</div>
               </div>
             );
           })}
