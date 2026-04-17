@@ -156,8 +156,8 @@ const Navbar = () => {
         </div>
 
         <div className="hidden lg:flex items-center gap-3">
-          <Link to="/support" className="accent-gradient rounded-lg px-5 py-2.5 text-sm font-semibold text-accent-foreground transition-all hover:opacity-90 hover:shadow-lg">
-            Free Download
+          <Link to="/login" className="accent-gradient rounded-lg px-5 py-2.5 text-sm font-semibold text-accent-foreground transition-all hover:opacity-90 hover:shadow-lg">
+            Login
           </Link>
         </div>
 

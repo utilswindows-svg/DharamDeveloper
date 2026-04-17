@@ -42,6 +42,7 @@ const Footer = () => (
           <h4 className="mb-4 text-sm font-semibold uppercase tracking-wider text-hero-foreground">Contact</h4>
           <ul className="space-y-2.5 text-sm">
             <li>support@windowsutils.com</li>
+            <li>sales@windowsutils.com</li>
             <li>Monday – Friday, 9am – 6pm</li>
           </ul>
         </div>

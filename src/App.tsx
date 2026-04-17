@@ -40,6 +40,7 @@ const App = () => (
           <Route path="/quality-policy" element={<QualityPolicy />} />
           <Route path="/legal" element={<Legal />} />
           <Route path="/cookie-preferences" element={<CookiePreferences />} />
+          <Route path="/login" element={<Support />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
