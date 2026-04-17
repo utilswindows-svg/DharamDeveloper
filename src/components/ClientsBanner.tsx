@@ -15,10 +15,10 @@ const stats = [
 
 const ClientsBanner = () => {
   return (
-    <section className="relative overflow-hidden bg-hero py-20">
+    <section className="relative overflow-hidden bg-gradient-to-br from-muted/40 via-background to-muted/40 py-20 border-y border-border">
       {/* Decorative gradient orbs */}
-      <div className="absolute -top-20 -left-20 h-72 w-72 rounded-full bg-primary/20 blur-3xl" />
-      <div className="absolute -bottom-20 -right-20 h-72 w-72 rounded-full bg-accent/20 blur-3xl" />
+      <div className="absolute -top-20 -left-20 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
+      <div className="absolute -bottom-20 -right-20 h-72 w-72 rounded-full bg-accent/10 blur-3xl" />
 
       <div className="section-container relative">
         {/* Header */}
@@ -32,10 +32,10 @@ const ClientsBanner = () => {
           <span className="inline-block px-4 py-1.5 rounded-full bg-accent/10 border border-accent/20 text-accent text-xs font-semibold uppercase tracking-wider mb-4">
             Our Clients
           </span>
-          <h2 className="text-3xl md:text-4xl font-bold font-heading text-hero-foreground mb-3">
+          <h2 className="text-3xl md:text-4xl font-bold font-heading text-foreground mb-3">
             Trusted by Industry Leaders Worldwide
           </h2>
-          <p className="text-hero-muted max-w-2xl mx-auto">
+          <p className="text-muted-foreground max-w-2xl mx-auto">
             Join thousands of organizations that rely on WindowsUtils for mission-critical data operations.
           </p>
         </motion.div>
@@ -53,11 +53,11 @@ const ClientsBanner = () => {
             return (
               <div
                 key={i}
-                className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/5 backdrop-blur-sm p-6 text-center hover:bg-hero-foreground/10 transition-colors"
+                className="rounded-2xl border border-border bg-card p-6 text-center hover:shadow-lg hover:-translate-y-1 transition-all"
               >
                 <Icon className="h-6 w-6 text-accent mx-auto mb-3" />
-                <div className="text-3xl font-bold font-heading text-hero-foreground mb-1">{s.value}</div>
-                <div className="text-xs text-hero-muted uppercase tracking-wider">{s.label}</div>
+                <div className="text-3xl font-bold font-heading text-foreground mb-1">{s.value}</div>
+                <div className="text-xs text-muted-foreground uppercase tracking-wider">{s.label}</div>
               </div>
             );
           })}
@@ -65,17 +65,17 @@ const ClientsBanner = () => {
 
         {/* Client logos marquee */}
         <div className="relative">
-          <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-hero to-transparent z-10 pointer-events-none" />
-          <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-hero to-transparent z-10 pointer-events-none" />
+          <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
 
           <div className="overflow-hidden">
             <div className="flex gap-4 animate-[marquee_30s_linear_infinite]">
               {[...clients, ...clients].map((name, i) => (
                 <div
                   key={i}
-                  className="flex-shrink-0 flex items-center justify-center px-8 py-4 rounded-xl border border-hero-foreground/10 bg-hero-foreground/5 backdrop-blur-sm min-w-[180px] hover:bg-hero-foreground/10 transition-colors"
+                  className="flex-shrink-0 flex items-center justify-center px-8 py-4 rounded-xl border border-border bg-card min-w-[180px] hover:border-primary/30 hover:shadow-md transition-all"
                 >
-                  <span className="text-lg font-bold font-heading text-hero-foreground/80 tracking-tight">
+                  <span className="text-lg font-bold font-heading text-foreground/70 tracking-tight">
                     {name}
                   </span>
                 </div>
