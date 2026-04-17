@@ -3,15 +3,43 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const productLinks = [
-  { name: "MBox to PDF", href: "/products/mbox-to-pdf" },
-  { name: "PST Migration", href: "/products/pst-migration" },
-  { name: "MSG Migration", href: "/products/msg-migration" },
-  { name: "MSG to PDF", href: "/products/msg-to-pdf" },
-  { name: "Data Recovery", href: "/products/data-recovery" },
-  { name: "PDF Tools", href: "/products/pdf-tools" },
-  { name: "PC Optimizer", href: "/products/pc-optimizer" },
+import { Mail, FileText, HardDrive, Zap, ArrowRight } from "lucide-react";
+
+const productCategories = [
+  {
+    title: "Email Migration",
+    icon: Mail,
+    color: "text-blue-500",
+    bg: "bg-blue-500/10",
+    items: [
+      { name: "MBox to PDF", desc: "Convert MBOX emails to PDF", href: "/products/mbox-to-pdf" },
+      { name: "PST Migration", desc: "Migrate Outlook PST files", href: "/products/pst-migration" },
+      { name: "MSG Migration", desc: "Move MSG files seamlessly", href: "/products/msg-migration" },
+      { name: "MSG to PDF", desc: "Export MSG to PDF format", href: "/products/msg-to-pdf" },
+    ],
+  },
+  {
+    title: "PDF Tools",
+    icon: FileText,
+    color: "text-rose-500",
+    bg: "bg-rose-500/10",
+    items: [
+      { name: "PDF Tools", desc: "Unlock, merge & convert PDFs", href: "/products/pdf-tools" },
+    ],
+  },
+  {
+    title: "Recovery & Optimization",
+    icon: HardDrive,
+    color: "text-emerald-500",
+    bg: "bg-emerald-500/10",
+    items: [
+      { name: "Data Recovery", desc: "Restore lost or deleted files", href: "/products/data-recovery" },
+      { name: "PC Optimizer", desc: "Boost Windows performance", href: "/products/pc-optimizer" },
+    ],
+  },
 ];
+
+const productLinks = productCategories.flatMap(c => c.items);
 
 const navLinks = [
   { name: "Home", href: "/" },
