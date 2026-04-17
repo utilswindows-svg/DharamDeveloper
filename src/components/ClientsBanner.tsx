@@ -15,10 +15,10 @@ const stats = [
 
 const ClientsBanner = () => {
   return (
-    <section className="relative overflow-hidden bg-hero py-20">
+    <section className="relative overflow-hidden bg-gradient-to-br from-muted/40 via-background to-muted/40 py-20 border-y border-border">
       {/* Decorative gradient orbs */}
-      <div className="absolute -top-20 -left-20 h-72 w-72 rounded-full bg-primary/20 blur-3xl" />
-      <div className="absolute -bottom-20 -right-20 h-72 w-72 rounded-full bg-accent/20 blur-3xl" />
+      <div className="absolute -top-20 -left-20 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
+      <div className="absolute -bottom-20 -right-20 h-72 w-72 rounded-full bg-accent/10 blur-3xl" />
 
       <div className="section-container relative">
         {/* Header */}
