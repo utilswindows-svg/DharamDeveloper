@@ -66,7 +66,7 @@ const Footer = () => (
         <div className="flex justify-center items-center gap-3 text-xs">
           <Link to="/legal" className="hover:text-hero-foreground transition-colors">Legal</Link>
           <span className="text-hero-muted/40">|</span>
-          <button className="hover:text-hero-foreground transition-colors">Cookie Preferences</button>
+          <Link to="/cookie-preferences" className="hover:text-hero-foreground transition-colors">Cookie Preferences</Link>
         </div>
       </div>
     </div>
