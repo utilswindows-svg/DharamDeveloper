@@ -17,6 +17,14 @@ import RefundPolicy from "./pages/RefundPolicy.tsx";
 import QualityPolicy from "./pages/QualityPolicy.tsx";
 import Legal from "./pages/Legal.tsx";
 import CookiePreferences from "./pages/CookiePreferences.tsx";
+import Login from "./pages/Login.tsx";
+import Signup from "./pages/Signup.tsx";
+import ForgotPassword from "./pages/ForgotPassword.tsx";
+import UserDashboard from "./pages/UserDashboard.tsx";
+import Profile from "./pages/Profile.tsx";
+import Downloads from "./pages/Downloads.tsx";
+import Billing from "./pages/Billing.tsx";
+import Settings from "./pages/Settings.tsx";
 
 const queryClient = new QueryClient();
 
@@ -40,7 +48,14 @@ const App = () => (
           <Route path="/quality-policy" element={<QualityPolicy />} />
           <Route path="/legal" element={<Legal />} />
           <Route path="/cookie-preferences" element={<CookiePreferences />} />
-          <Route path="/login" element={<Support />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/dashboard" element={<UserDashboard />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/downloads" element={<Downloads />} />
+          <Route path="/billing" element={<Billing />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

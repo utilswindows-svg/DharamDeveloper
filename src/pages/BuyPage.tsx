@@ -118,7 +118,7 @@ const BuyPage = () => {
                     </div>
 
                     <Button
-                      className={`mt-5 w-full font-semibold ${isSelected ? "accent-gradient text-accent-foreground" : ""}`}
+                      className={`mt-5 w-full font-semibold ${isSelected ? "bg-blue-500 text-white" : ""}`}
                       variant={isSelected ? "default" : "outline"}
                       asChild
                     >

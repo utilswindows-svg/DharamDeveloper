@@ -5,14 +5,14 @@ import { Search, ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 
 const faqs = [
-  { q: "How do I install WindowsUtils software?", a: "Download the installer from the product page, run the .exe file, and follow the on-screen instructions. All our installers are digitally signed for your safety." },
-  { q: "Is there a free trial available?", a: "Yes! Every WindowsUtils product comes with a free trial version. You can evaluate the software before making a purchase." },
-  { q: "How do I activate my license?", a: "After purchase, you'll receive a license key via email. Open the software, go to Help > Activate License, and enter your key." },
-  { q: "What payment methods do you accept?", a: "We accept all major credit cards, PayPal, and bank transfers. All transactions are processed through secure payment gateways." },
-  { q: "Can I get a refund?", a: "We offer a 30-day money-back guarantee. If you're not satisfied, contact our support team for a full refund." },
-  { q: "How do I convert MBOX to PDF?", a: "Install MBox to PDF tool, add your MBOX file, select output settings, and click Convert. The tool handles batch conversions with attachments." },
-  { q: "Is my data safe during migration?", a: "Absolutely. All our migration tools work locally on your machine. No data is uploaded to external servers during the process." },
-  { q: "Do you offer bulk/enterprise licenses?", a: "Yes, we offer volume licensing for organizations. Contact our sales team at sales@windowsutils.com for custom pricing." },
+  { q: "How do I install WindowsUtils software?", a: "Download the installer from the product page, run the .exe file, and follow the on-screen instructions. All our installers are digitally signed for your safety.", category: "Installation" },
+  { q: "Is there a free trial available?", a: "Yes! Every WindowsUtils product comes with a free trial version. You can evaluate the software before making a purchase.", category: "Products" },
+  { q: "How do I activate my license?", a: "After purchase, you'll receive a license key via email. Open the software, go to Help > Activate License, and enter your key.", category: "Licensing" },
+  { q: "What payment methods do you accept?", a: "We accept all major credit cards, PayPal, and bank transfers. All transactions are processed through secure payment gateways.", category: "Billing" },
+  { q: "Can I get a refund?", a: "We offer a 30-day money-back guarantee. If you're not satisfied, contact our support team for a full refund.", category: "Billing" },
+  { q: "How do I convert MBOX to PDF?", a: "Install MBox to PDF tool, add your MBOX file, select output settings, and click Convert. The tool handles batch conversions with attachments.", category: "Products" },
+  { q: "Is my data safe during migration?", a: "Absolutely. All our migration tools work locally on your machine. No data is uploaded to external servers during the process.", category: "Products" },
+  { q: "Do you offer bulk/enterprise licenses?", a: "Yes, we offer volume licensing for organizations. Contact our sales team at sales@windowsutils.com for custom pricing.", category: "Licensing" },
 ];
 
 const categories = ["All", "Installation", "Licensing", "Products", "Billing"];
@@ -20,8 +20,12 @@ const categories = ["All", "Installation", "Licensing", "Products", "Billing"];
 const HelpCenter = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [search, setSearch] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
 
-  const filtered = faqs.filter(f => f.q.toLowerCase().includes(search.toLowerCase()) || f.a.toLowerCase().includes(search.toLowerCase()));
+  const filtered = faqs.filter(f => 
+    (f.q.toLowerCase().includes(search.toLowerCase()) || f.a.toLowerCase().includes(search.toLowerCase())) &&
+    (selectedCategory === "All" || f.category === selectedCategory)
+  );
 
   return (
     <div className="min-h-screen">
@@ -51,7 +55,15 @@ const HelpCenter = () => {
         <div className="section-container max-w-3xl">
           <div className="mb-8 flex flex-wrap gap-2">
             {categories.map(c => (
-              <button key={c} className="rounded-full border border-border bg-card px-4 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground hover:border-primary">
+              <button 
+                key={c} 
+                onClick={() => setSelectedCategory(c)}
+                className={`rounded-full border px-4 py-1.5 text-sm font-medium transition-colors ${
+                  selectedCategory === c 
+                    ? "border-primary bg-primary text-primary-foreground" 
+                    : "border-border bg-card text-muted-foreground hover:text-foreground hover:border-primary"
+                }`}
+              >
                 {c}
               </button>
             ))}

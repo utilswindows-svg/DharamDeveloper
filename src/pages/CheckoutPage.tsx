@@ -1,10 +1,11 @@
 import { useParams, useSearchParams, Navigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, ShieldCheck, Lock, CreditCard, Mail, User, Building2, Globe, MapPin } from "lucide-react";
+import { ArrowLeft, ShieldCheck, Lock, CreditCard, Mail, User, Building2, Globe, MapPin, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { products } from "@/data/products";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -23,7 +24,7 @@ const CheckoutPage = () => {
 
   const license = product.licenses[licenseIndex] || product.licenses[0];
   const Icon = product.icon;
-  const tax = +(license.price * 0.1).toFixed(2);
+  const tax = +(license.price * 0.18).toFixed(2);
   const total = +(license.price + tax).toFixed(2);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -39,7 +40,8 @@ const CheckoutPage = () => {
   };
 
   return (
-    <div className="min-h-screen">
+    <TooltipProvider>
+      <div className="min-h-screen">
       <Navbar />
 
       {/* Header */}
@@ -176,7 +178,15 @@ const CheckoutPage = () => {
                       </div>
                     )}
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Estimated Tax</span>
+                      <span className="text-muted-foreground flex items-center gap-1">
+                        Estimated Tax
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <Info className="h-3 w-3" />
+                          </TooltipTrigger>
+                          <TooltipContent>GST 18% applicable</TooltipContent>
+                        </Tooltip>
+                      </span>
                       <span className="text-foreground">${tax.toFixed(2)}</span>
                     </div>
                   </div>
@@ -227,6 +237,7 @@ const CheckoutPage = () => {
 
       <Footer />
     </div>
+    </TooltipProvider>
   );
 };
 

@@ -36,7 +36,7 @@ const ProductPageLayout = ({ product }: { product: ProductData }) => {
                   <Download className="h-4 w-4" /> Free Download
                 </Button>
                 <Link to={`/buy/${product.slug}`}>
-                  <Button size="lg" variant="outline" className="border-white/20 text-hero-foreground hover:bg-white/10 gap-2">
+                  <Button size="lg" variant="outline" className="bg-blue-500 text-white border-blue-500 hover:bg-blue-600 gap-2">
                     Buy Now <ArrowRight className="h-4 w-4" />
                   </Button>
                 </Link>
@@ -215,7 +215,7 @@ const ProductPageLayout = ({ product }: { product: ProductData }) => {
               <Download className="h-4 w-4" /> Download Free Trial
             </Button>
             <Link to="/support">
-              <Button size="lg" variant="outline" className="border-white/20 text-hero-foreground hover:bg-white/10">
+              <Button size="lg" variant="outline" className="bg-blue-500 text-white border-blue-500 hover:bg-blue-600">
                 Contact Support
               </Button>
             </Link>
