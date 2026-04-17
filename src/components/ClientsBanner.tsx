@@ -65,17 +65,17 @@ const ClientsBanner = () => {
 
         {/* Client logos marquee */}
         <div className="relative">
-          <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-hero to-transparent z-10 pointer-events-none" />
-          <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-hero to-transparent z-10 pointer-events-none" />
+          <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
 
           <div className="overflow-hidden">
             <div className="flex gap-4 animate-[marquee_30s_linear_infinite]">
               {[...clients, ...clients].map((name, i) => (
                 <div
                   key={i}
-                  className="flex-shrink-0 flex items-center justify-center px-8 py-4 rounded-xl border border-hero-foreground/10 bg-hero-foreground/5 backdrop-blur-sm min-w-[180px] hover:bg-hero-foreground/10 transition-colors"
+                  className="flex-shrink-0 flex items-center justify-center px-8 py-4 rounded-xl border border-border bg-card min-w-[180px] hover:border-primary/30 hover:shadow-md transition-all"
                 >
-                  <span className="text-lg font-bold font-heading text-hero-foreground/80 tracking-tight">
+                  <span className="text-lg font-bold font-heading text-foreground/70 tracking-tight">
                     {name}
                   </span>
                 </div>
