@@ -32,9 +32,11 @@ const ProductPageLayout = ({ product }: { product: ProductData }) => {
               <p className="mt-4 max-w-xl text-sm text-hero-muted/80 leading-relaxed">{product.description}</p>
 
               <div className="mt-8 flex flex-wrap items-center gap-4">
-                <Button size="lg" className="accent-gradient text-accent-foreground font-semibold gap-2 hover:opacity-90">
-                  <Download className="h-4 w-4" /> Free Download
-                </Button>
+                <a href={`/downloads/${product.slug}-setup.exe`} download>
+                  <Button size="lg" className="accent-gradient text-accent-foreground font-semibold gap-2 hover:opacity-90">
+                    <Download className="h-4 w-4" /> Free Download
+                  </Button>
+                </a>
                 <Link to={`/buy/${product.slug}`}>
                   <Button size="lg" variant="outline" className="bg-blue-500 text-white border-blue-500 hover:bg-blue-600 gap-2">
                     Buy Now <ArrowRight className="h-4 w-4" />
@@ -211,9 +213,11 @@ const ProductPageLayout = ({ product }: { product: ProductData }) => {
             Download {product.title} free trial today. No credit card required.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
-            <Button size="lg" className="accent-gradient text-accent-foreground font-semibold gap-2 hover:opacity-90">
-              <Download className="h-4 w-4" /> Download Free Trial
-            </Button>
+            <a href={`/downloads/${product.slug}-setup.exe`} download>
+              <Button size="lg" className="accent-gradient text-accent-foreground font-semibold gap-2 hover:opacity-90">
+                <Download className="h-4 w-4" /> Download Free Trial
+              </Button>
+            </a>
             <Link to="/support">
               <Button size="lg" variant="outline" className="bg-blue-500 text-white border-blue-500 hover:bg-blue-600">
                 Contact Support
