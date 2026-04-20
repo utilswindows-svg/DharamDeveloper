@@ -116,8 +116,11 @@ const ProductPageLayout = ({ product }: { product: ProductData }) => {
         </div>
       </section>
 
+      {/* Screenshots */}
+      <ScreenshotsSection product={product} />
+
       {/* How It Works */}
-      <section className="py-20 bg-muted/30">
+      <section className="py-20 bg-background">
         <div className="section-container">
           <div className="text-center">
             <span className="text-xs font-semibold uppercase tracking-widest text-accent">How It Works</span>
