@@ -8,6 +8,20 @@ export interface LicenseData {
   desc: string;
 }
 
+export interface ReviewData {
+  name: string;
+  role: string;
+  rating: number;
+  text: string;
+  initials: string;
+}
+
+export interface ScreenshotData {
+  title: string;
+  caption: string;
+  accent: string; // tailwind gradient classes for the mock screen
+}
+
 export interface ProductData {
   slug: string;
   title: string;
@@ -21,7 +35,28 @@ export interface ProductData {
   systemReqs: string[];
   formats?: string[];
   licenses: LicenseData[];
+  screenshots?: ScreenshotData[];
+  videoUrl?: string;
+  videoPoster?: string;
+  reviews?: ReviewData[];
 }
+
+// Shared defaults applied to every product (can be overridden per product)
+const defaultScreenshots: ScreenshotData[] = [
+  { title: "Main Dashboard", caption: "Clean, intuitive interface — get started in seconds.", accent: "from-primary/30 to-accent/20" },
+  { title: "Smart Preview", caption: "Preview files before processing to avoid surprises.", accent: "from-accent/30 to-success/20" },
+  { title: "Batch Processing", caption: "Run hundreds of operations in a single workflow.", accent: "from-success/30 to-teal/20" },
+  { title: "Detailed Reports", caption: "Track progress with real-time logs and reports.", accent: "from-teal/30 to-primary/20" },
+];
+
+const defaultReviews: ReviewData[] = [
+  { name: "Sarah Mitchell", role: "IT Administrator", rating: 5, initials: "SM", text: "Saved us countless hours on a major migration project. The batch mode just works — exactly what we needed." },
+  { name: "David Chen", role: "Legal Consultant", rating: 5, initials: "DC", text: "Reliable, fast, and the support team responds quickly. Worth every dollar for our firm's daily workflow." },
+  { name: "Priya Sharma", role: "Small Business Owner", rating: 4, initials: "PS", text: "Easy to install and very intuitive. I had everything converted in under an hour with zero data loss." },
+  { name: "Marcus Johnson", role: "Freelance Developer", rating: 5, initials: "MJ", text: "Best tool I've used in this category. The interface is clean and there are no annoying upsells." },
+];
+
+const defaultVideo = "https://www.w3schools.com/html/mov_bbb.mp4";
 
 export const products: Record<string, ProductData> = {
   "mbox-to-pdf": {
