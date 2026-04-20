@@ -4,6 +4,7 @@ import { Check, Download, ArrowRight, ChevronDown, Monitor, Star } from "lucide-
 import { Button } from "@/components/ui/button";
 import type { ProductData } from "@/data/products";
 import { useState } from "react";
+import { ScreenshotsSection, VideoSection, ReviewsSection } from "@/components/product/ProductExtras";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
