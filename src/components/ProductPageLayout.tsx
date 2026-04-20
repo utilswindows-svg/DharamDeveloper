@@ -151,8 +151,11 @@ const ProductPageLayout = ({ product }: { product: ProductData }) => {
         </div>
       </section>
 
+      {/* Product Video */}
+      <VideoSection product={product} />
+
       {/* System Requirements & FAQ */}
-      <section className="py-20 bg-background">
+      <section className="py-20 bg-muted/30">
         <div className="section-container">
           <div className="grid gap-12 lg:grid-cols-2">
             {/* System Reqs */}
@@ -208,6 +211,9 @@ const ProductPageLayout = ({ product }: { product: ProductData }) => {
           </div>
         </div>
       </section>
+
+      {/* Reviews */}
+      <ReviewsSection product={product} />
 
       {/* CTA */}
       <section className="py-16 bg-hero text-hero-foreground">
