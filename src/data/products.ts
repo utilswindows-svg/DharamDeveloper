@@ -310,3 +310,10 @@ export const products: Record<string, ProductData> = {
     ],
   },
 };
+
+// Inject shared defaults so every product page has screenshots, video, and reviews.
+Object.values(products).forEach((p) => {
+  if (!p.screenshots) p.screenshots = defaultScreenshots;
+  if (!p.videoUrl) p.videoUrl = defaultVideo;
+  if (!p.reviews) p.reviews = defaultReviews;
+});
