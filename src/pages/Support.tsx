@@ -23,7 +23,7 @@ const Support = () => {
   };
 
   const handleCallNow = () => {
-    window.location.href = 'tel:+15551234567';
+    window.location.href = 'tel:+91-8750299299';
   };
 
   const handleCreateTicket = () => {

@@ -4,6 +4,7 @@ import { Menu, X, ChevronDown, User, LogOut, Settings } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { Mail, FileText, HardDrive, Zap, ArrowRight } from "lucide-react";
+import logo from "../assets/logo.png";
 
 const productCategories = [
   {
@@ -82,14 +83,8 @@ const Navbar = () => {
 
       {/* Main nav */}
       <nav className="section-container flex items-center justify-between py-3">
-        <Link to="/" className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg primary-gradient">
-            <span className="text-lg font-bold text-primary-foreground font-heading">W</span>
-          </div>
-          <div>
-            <span className="text-lg font-bold font-heading text-foreground">Windows</span>
-            <span className="text-lg font-bold font-heading text-accent">Utils</span>
-          </div>
+        <Link to="/" className="flex items-center gap-2" style={{width:"33%", height:"40px"}}>
+        <img src={logo} title="logo" alt="logo" style={{width:"45%", height:"150%"}} />          
         </Link>
 
         {/* Desktop */}

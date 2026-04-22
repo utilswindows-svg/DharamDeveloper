@@ -19,7 +19,7 @@ export interface ReviewData {
 export interface ScreenshotData {
   title: string;
   caption: string;
-  accent: string; // tailwind gradient classes for the mock screen
+  accent: string; 
 }
 
 export interface ProductData {
