@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { User, Settings, CreditCard, Download, LogOut, Shield } from 'lucide-react';
+import { User, Settings, CreditCard, Download, LogOut, Shield, Key, CheckCircle, Clock, ArrowRight } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -27,6 +27,12 @@ const UserDashboard = () => {
       title: 'My Downloads',
       description: 'Access your purchased software',
       link: '/downloads',
+    },
+    {
+      icon: Key,
+      title: 'My Licenses',
+      description: 'View license keys and activations',
+      link: '/licenses',
     },
     {
       icon: CreditCard,
@@ -95,6 +101,60 @@ const UserDashboard = () => {
               </motion.div>
             ))}
           </div>
+
+          {/* Your Licenses Preview */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="bg-white rounded-xl shadow-lg p-8 mb-8"
+          >
+            <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center">
+                  <Key className="h-6 w-6 text-accent" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold">Your Licenses</h2>
+                  <p className="text-sm text-muted-foreground">Quick overview of your activations</p>
+                </div>
+              </div>
+              <Link
+                to="/licenses"
+                className="inline-flex items-center gap-2 text-accent hover:underline font-semibold"
+              >
+                View All <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+
+            <div className="grid sm:grid-cols-3 gap-4 mb-6">
+              <div className="border border-border rounded-lg p-4">
+                <div className="flex items-center gap-2 text-muted-foreground text-sm mb-1">
+                  <Key className="h-4 w-4" /> Total
+                </div>
+                <p className="text-2xl font-bold">5</p>
+              </div>
+              <div className="border border-border rounded-lg p-4">
+                <div className="flex items-center gap-2 text-green-600 text-sm mb-1">
+                  <CheckCircle className="h-4 w-4" /> Active
+                </div>
+                <p className="text-2xl font-bold">3</p>
+              </div>
+              <div className="border border-border rounded-lg p-4">
+                <div className="flex items-center gap-2 text-amber-600 text-sm mb-1">
+                  <Clock className="h-4 w-4" /> Trial
+                </div>
+                <p className="text-2xl font-bold">1</p>
+              </div>
+            </div>
+
+            <Link
+              to="/licenses"
+              className="block w-full text-center bg-accent text-accent-foreground py-3 rounded-lg font-semibold hover:bg-accent/90 transition-colors"
+            >
+              Manage Licenses
+            </Link>
+          </motion.div>
 
           {/* Quick Actions */}
           <motion.div
