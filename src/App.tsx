@@ -27,6 +27,15 @@ import Billing from "./pages/Billing.tsx";
 import Settings from "./pages/Settings.tsx";
 import AdminDownloads from "./pages/admin/AdminDownloads.tsx";
 import Licenses from "./pages/Licenses.tsx";
+import AdminDashboard from "./pages/admin/AdminDashboard.tsx";
+import AdminUsers from "./pages/admin/AdminUsers.tsx";
+import AdminLicenses from "./pages/admin/AdminLicenses.tsx";
+import AdminTickets from "./pages/admin/AdminTickets.tsx";
+import AdminFeedback from "./pages/admin/AdminFeedback.tsx";
+import AdminContacts from "./pages/admin/AdminContacts.tsx";
+import AdminHelp from "./pages/admin/AdminHelp.tsx";
+import AdminProfile from "./pages/admin/AdminProfile.tsx";
+import AdminSettings from "./pages/admin/AdminSettings.tsx";
 
 const queryClient = new QueryClient();
 
@@ -60,6 +69,15 @@ const App = () => (
           <Route path="/billing" element={<Billing />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/admin/downloads" element={<AdminDownloads />} />
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/users" element={<AdminUsers />} />
+          <Route path="/admin/licenses" element={<AdminLicenses />} />
+          <Route path="/admin/tickets" element={<AdminTickets />} />
+          <Route path="/admin/feedback" element={<AdminFeedback />} />
+          <Route path="/admin/contacts" element={<AdminContacts />} />
+          <Route path="/admin/help" element={<AdminHelp />} />
+          <Route path="/admin/profile" element={<AdminProfile />} />
+          <Route path="/admin/settings" element={<AdminSettings />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
