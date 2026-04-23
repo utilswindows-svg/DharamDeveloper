@@ -1,8 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, FileDown, HardDrive, Search, Users, Download, TrendingUp, Filter } from 'lucide-react';
-import Navbar from '../../components/Navbar';
-import Footer from '../../components/Footer';
+import AdminLayout from '@/components/admin/AdminLayout';
 import {
   Table,
   TableBody,
@@ -99,32 +98,10 @@ const AdminDownloads = () => {
   ];
 
   return (
-    <div className="min-h-screen">
-      <Navbar />
-
-      {/* Header */}
-      <section className="bg-hero text-hero-foreground py-12">
-        <div className="section-container">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="flex items-center gap-2 mb-2">
-              <span className="px-3 py-1 bg-accent/20 text-accent-foreground text-xs font-semibold rounded-full">
-                ADMIN PANEL
-              </span>
-            </div>
-            <h1 className="text-4xl font-bold mb-2">Download History</h1>
-            <p className="text-hero-muted">
-              Complete log of every free and licensed .exe download across all users
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
-      <section className="py-12">
-        <div className="section-container">
+    <AdminLayout
+      title="Download History"
+      description="Complete log of every free and licensed .exe download across all users"
+    >
           {/* Stats */}
           <div className="grid md:grid-cols-4 gap-4 mb-10">
             {stats.map((stat, idx) => {
@@ -135,7 +112,7 @@ const AdminDownloads = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: idx * 0.1 }}
-                  className="bg-white rounded-xl shadow-lg p-6"
+                  className="bg-card rounded-xl shadow-lg p-6 border border-border"
                 >
                   <div className="flex items-center gap-3 mb-2">
                     <div className={`w-10 h-10 bg-${stat.color}/10 rounded-lg flex items-center justify-center`}>
@@ -154,7 +131,7 @@ const AdminDownloads = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="bg-white rounded-xl shadow-lg p-6"
+            className="bg-card rounded-xl shadow-lg p-6 border border-border"
           >
             <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
               <div>
