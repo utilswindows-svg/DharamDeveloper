@@ -25,6 +25,7 @@ import Profile from "./pages/Profile.tsx";
 import Downloads from "./pages/Downloads.tsx";
 import Billing from "./pages/Billing.tsx";
 import Settings from "./pages/Settings.tsx";
+import AdminDownloads from "./pages/admin/AdminDownloads.tsx";
 
 const queryClient = new QueryClient();
 
@@ -56,6 +57,7 @@ const App = () => (
           <Route path="/downloads" element={<Downloads />} />
           <Route path="/billing" element={<Billing />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/admin/downloads" element={<AdminDownloads />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
