@@ -258,11 +258,7 @@ const AdminDownloads = () => {
               </Table>
             </div>
           </motion.div>
-        </div>
-      </section>
-
-      <Footer />
-    </div>
+    </AdminLayout>
   );
 };
 
