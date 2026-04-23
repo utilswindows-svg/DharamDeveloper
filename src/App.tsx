@@ -26,6 +26,7 @@ import Downloads from "./pages/Downloads.tsx";
 import Billing from "./pages/Billing.tsx";
 import Settings from "./pages/Settings.tsx";
 import AdminDownloads from "./pages/admin/AdminDownloads.tsx";
+import Licenses from "./pages/Licenses.tsx";
 
 const queryClient = new QueryClient();
 
@@ -55,6 +56,7 @@ const App = () => (
           <Route path="/dashboard" element={<UserDashboard />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/downloads" element={<Downloads />} />
+          <Route path="/licenses" element={<Licenses />} />
           <Route path="/billing" element={<Billing />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/admin/downloads" element={<AdminDownloads />} />

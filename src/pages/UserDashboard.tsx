@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { User, Settings, CreditCard, Download, LogOut, Shield } from 'lucide-react';
+import { User, Settings, CreditCard, Download, LogOut, Shield, Key, CheckCircle, Clock, ArrowRight } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -27,6 +27,12 @@ const UserDashboard = () => {
       title: 'My Downloads',
       description: 'Access your purchased software',
       link: '/downloads',
+    },
+    {
+      icon: Key,
+      title: 'My Licenses',
+      description: 'View license keys and activations',
+      link: '/licenses',
     },
     {
       icon: CreditCard,
