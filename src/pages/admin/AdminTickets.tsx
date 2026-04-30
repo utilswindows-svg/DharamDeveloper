@@ -5,6 +5,14 @@ import AdminLayout from "@/components/admin/AdminLayout";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 interface SupportTicket {
   id: string;
@@ -47,6 +55,7 @@ const statusBadge = (s: SupportTicket["status"]) => {
 export default function AdminTickets() {
   const [filter, setFilter] = useState<"all" | "open" | "in_progress" | "resolved">("all");
   const [tickets, setTickets] = useState<SupportTicket[]>(initialTickets);
+  const [viewing, setViewing] = useState<SupportTicket | null>(null);
   const filtered = filter === "all" ? tickets : tickets.filter((t) => t.status === filter);
 
   const updateStatus = (id: string, status: SupportTicket["status"]) => {
@@ -114,6 +123,12 @@ export default function AdminTickets() {
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-1">
                       <Button variant="ghost" size="sm" className="gap-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="gap-1"
+                        onClick={() => setViewing(t)}
+                      >
                         <Eye className="h-4 w-4" /> View
                       </Button>
                       {t.status !== "resolved" ? (
