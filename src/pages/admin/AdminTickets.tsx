@@ -122,7 +122,6 @@ export default function AdminTickets() {
                   <TableCell>{statusBadge(t.status)}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-1">
-                      <Button variant="ghost" size="sm" className="gap-1">
                       <Button
                         variant="ghost"
                         size="sm"
