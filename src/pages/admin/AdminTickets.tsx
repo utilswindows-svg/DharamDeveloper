@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Ticket, Clock, CheckCircle, AlertCircle, Eye } from "lucide-react";
+import { Ticket, Clock, CheckCircle, AlertCircle, Eye, RotateCcw } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/hooks/use-toast";
 
 interface SupportTicket {
   id: string;
@@ -15,7 +16,7 @@ interface SupportTicket {
   created: string;
 }
 
-const tickets: SupportTicket[] = [
+const initialTickets: SupportTicket[] = [
   { id: "T-1284", subject: "Installation fails on Windows 11", user: "Rohit Sharma", email: "rohit@example.com", priority: "high", status: "open", created: "2026-04-22" },
   { id: "T-1283", subject: "License key not activating", user: "Anita Verma", email: "anita.v@example.com", priority: "high", status: "in_progress", created: "2026-04-22" },
   { id: "T-1282", subject: "Feature request: dark mode", user: "Karan Mehta", email: "karan.m@example.com", priority: "low", status: "open", created: "2026-04-21" },
@@ -45,7 +46,16 @@ const statusBadge = (s: SupportTicket["status"]) => {
 
 export default function AdminTickets() {
   const [filter, setFilter] = useState<"all" | "open" | "in_progress" | "resolved">("all");
+  const [tickets, setTickets] = useState<SupportTicket[]>(initialTickets);
   const filtered = filter === "all" ? tickets : tickets.filter((t) => t.status === filter);
+
+  const updateStatus = (id: string, status: SupportTicket["status"]) => {
+    setTickets((prev) => prev.map((t) => (t.id === id ? { ...t, status } : t)));
+    toast({
+      title: status === "resolved" ? "Ticket resolved" : "Ticket reopened",
+      description: `Ticket ${id} marked as ${status.replace("_", " ")}.`,
+    });
+  };
 
   return (
     <AdminLayout title="Support Tickets" description="Manage customer support requests">
@@ -102,9 +112,30 @@ export default function AdminTickets() {
                   <TableCell className="text-sm text-muted-foreground">{t.created}</TableCell>
                   <TableCell>{statusBadge(t.status)}</TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="sm" className="gap-1">
-                      <Eye className="h-4 w-4" /> View
-                    </Button>
+                    <div className="flex justify-end gap-1">
+                      <Button variant="ghost" size="sm" className="gap-1">
+                        <Eye className="h-4 w-4" /> View
+                      </Button>
+                      {t.status !== "resolved" ? (
+                        <Button
+                          variant="default"
+                          size="sm"
+                          className="gap-1"
+                          onClick={() => updateStatus(t.id, "resolved")}
+                        >
+                          <CheckCircle className="h-4 w-4" /> Resolve
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="gap-1"
+                          onClick={() => updateStatus(t.id, "open")}
+                        >
+                          <RotateCcw className="h-4 w-4" /> Reopen
+                        </Button>
+                      )}
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
