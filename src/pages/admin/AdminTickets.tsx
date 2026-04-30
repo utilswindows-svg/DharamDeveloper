@@ -157,6 +157,73 @@ export default function AdminTickets() {
           </Table>
         </div>
       </motion.div>
+
+      <Dialog open={!!viewing} onOpenChange={(o) => !o && setViewing(null)}>
+        <DialogContent>
+          {viewing && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <Ticket className="h-5 w-5 text-accent" /> {viewing.subject}
+                </DialogTitle>
+                <DialogDescription className="font-mono text-xs">
+                  {viewing.id} · Created {viewing.created}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-3 text-sm">
+                <div className="grid grid-cols-3 gap-2">
+                  <span className="text-muted-foreground">User</span>
+                  <span className="col-span-2 font-medium">{viewing.user}</span>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  <span className="text-muted-foreground">Email</span>
+                  <span className="col-span-2">{viewing.email}</span>
+                </div>
+                <div className="grid grid-cols-3 gap-2 items-center">
+                  <span className="text-muted-foreground">Priority</span>
+                  <span className="col-span-2">
+                    <span className={`px-2 py-1 text-xs font-semibold rounded-full capitalize ${priorityColor[viewing.priority]}`}>
+                      {viewing.priority}
+                    </span>
+                  </span>
+                </div>
+                <div className="grid grid-cols-3 gap-2 items-center">
+                  <span className="text-muted-foreground">Status</span>
+                  <span className="col-span-2">{statusBadge(viewing.status)}</span>
+                </div>
+                <div className="pt-2 border-t border-border">
+                  <p className="text-muted-foreground mb-1">Message</p>
+                  <p>{viewing.subject}. The user has reported this issue and is awaiting response from the support team.</p>
+                </div>
+              </div>
+              <DialogFooter>
+                {viewing.status !== "resolved" ? (
+                  <Button
+                    onClick={() => {
+                      updateStatus(viewing.id, "resolved");
+                      setViewing(null);
+                    }}
+                    className="gap-1"
+                  >
+                    <CheckCircle className="h-4 w-4" /> Mark as Resolved
+                  </Button>
+                ) : (
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      updateStatus(viewing.id, "open");
+                      setViewing(null);
+                    }}
+                    className="gap-1"
+                  >
+                    <RotateCcw className="h-4 w-4" /> Reopen Ticket
+                  </Button>
+                )}
+              </DialogFooter>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 }
