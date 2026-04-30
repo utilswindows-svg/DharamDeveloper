@@ -10,6 +10,7 @@ import {
   MessageSquare,
   Ticket,
   LogOut,
+  CreditCard,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { NavLink } from "@/components/NavLink";
@@ -32,6 +33,7 @@ const mainItems = [
   { title: "Users", url: "/admin/users", icon: Users },
   { title: "Licenses", url: "/admin/licenses", icon: Key },
   { title: "Downloads", url: "/admin/downloads", icon: Download },
+  { title: "Payment Gateways", url: "/admin/payments", icon: CreditCard },
 ];
 
 const supportItems = [

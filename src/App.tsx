@@ -36,6 +36,7 @@ import AdminContacts from "./pages/admin/AdminContacts.tsx";
 import AdminHelp from "./pages/admin/AdminHelp.tsx";
 import AdminProfile from "./pages/admin/AdminProfile.tsx";
 import AdminSettings from "./pages/admin/AdminSettings.tsx";
+import AdminPayments from "./pages/admin/AdminPayments.tsx";
 
 const queryClient = new QueryClient();
 
@@ -76,6 +77,7 @@ const App = () => (
           <Route path="/admin/feedback" element={<AdminFeedback />} />
           <Route path="/admin/contacts" element={<AdminContacts />} />
           <Route path="/admin/help" element={<AdminHelp />} />
+          <Route path="/admin/payments" element={<AdminPayments />} />
           <Route path="/admin/profile" element={<AdminProfile />} />
           <Route path="/admin/settings" element={<AdminSettings />} />
           <Route path="*" element={<NotFound />} />
