@@ -20,6 +20,7 @@ const licenses: License[] = [
   { id: 2, key: "PWM-3K8L-9D2F-1A5G", user: "Anita Verma", software: "Password Manager", systems: "2/3", purchase: "2026-02-10", expiry: "2027-02-10", status: "active" },
   { id: 3, key: "DRT-7H2P-4M9N-6Q3R", user: "Karan Mehta", software: "Data Recovery", systems: "0/1", purchase: "2026-03-05", expiry: "2026-04-05", status: "trial" },
   { id: 4, key: "SOP-5J1K-8L4M-2N7P", user: "Sneha Iyer", software: "System Optimizer", systems: "1/1", purchase: "2025-04-20", expiry: "2026-04-20", status: "expired" },
+  { id: 5, key: "MBX-2026-50PC-PDFC-9X7Q", user: "Rohit Sharma", software: "MBOX to PDF Converter", systems: "0/50", purchase: "2026-05-01", expiry: "2027-05-01", status: "active" },
 ];
 
 const stats = [
