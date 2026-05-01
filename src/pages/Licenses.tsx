@@ -44,6 +44,17 @@ const Licenses = () => {
       createdAt: '2026-03-15 10:24:11',
     },
     {
+      id: 6,
+      licenseKey: 'MBX-2026-50PC-PDFC-9X7Q',
+      software: 'MBOX to PDF Converter',
+      systems: 50,
+      used: 0,
+      purchase: 'May 1, 2026',
+      expiry: 'May 1, 2027',
+      status: 'active',
+      createdAt: '2026-05-01 09:00:00',
+    },
+    {
       id: 2,
       licenseKey: 'SOP-2026-X9Y8-Z7W6-V5U4',
       software: 'System Optimizer',
