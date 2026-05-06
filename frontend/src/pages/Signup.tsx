@@ -55,7 +55,6 @@ const Signup = () => {
 
     // Simulate signup
     setTimeout(() => {
-      console.log('Signup with:', formData);
       localStorage.setItem('isLoggedIn', 'true');
       setIsLoading(false);
       navigate('/dashboard');
@@ -63,12 +62,10 @@ const Signup = () => {
   };
 
   const handleGoogleSignup = () => {
-    console.log('Signup with Google');
     // Implement Google OAuth signup
   };
 
   const handleFacebookSignup = () => {
-    console.log('Signup with Facebook');
     // Implement Facebook OAuth signup
   };
 
