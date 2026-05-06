@@ -6,7 +6,11 @@ CREATE TABLE IF NOT EXISTS users (
   name VARCHAR(100) NOT NULL,
   email VARCHAR(255) NOT NULL UNIQUE,
   phone VARCHAR(20) NULL,
-  password VARCHAR(255) NOT NULL,
+  password VARCHAR(255) NULL,
+  role ENUM('user','admin') NOT NULL DEFAULT 'user',
+  provider ENUM('local','google','facebook') NOT NULL DEFAULT 'local',
+  providerId VARCHAR(255) NULL,
+  avatar VARCHAR(500) NULL,
   createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   INDEX idx_users_phone (phone)

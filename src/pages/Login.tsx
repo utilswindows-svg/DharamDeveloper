@@ -1,19 +1,37 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Lock, Eye, EyeOff, User } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import {
+  useAppDispatch,
+  useAppSelector,
+  loginUser,
+  socialLogin,
+  clearAuthError,
+} from '../store/authStore';
+
+const GOOGLE_CLIENT_ID = (import.meta as any).env?.VITE_GOOGLE_CLIENT_ID || '';
+const FACEBOOK_APP_ID = (import.meta as any).env?.VITE_FACEBOOK_APP_ID || '';
 
 const Login = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { loading: isLoading, error: authError, user } = useAppSelector((s) => s.auth);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => { if (authError) setError(authError); }, [authError]);
+  useEffect(() => () => { dispatch(clearAuthError()); }, [dispatch]);
+
+  const redirectByRole = (role?: string) => {
+    navigate(role === 'admin' ? '/admin' : '/dashboard');
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -23,44 +41,52 @@ const Login = () => {
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-
-    // Validation
     if (!formData.email || !formData.password) {
       setError('Please fill in all fields');
-      setIsLoading(false);
       return;
     }
-
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       setError('Please enter a valid email');
-      setIsLoading(false);
       return;
     }
-
     if (formData.password.length < 6) {
       setError('Password must be at least 6 characters');
-      setIsLoading(false);
       return;
     }
-
-    // Simulate login
-    setTimeout(() => {
-      console.log('Login with:', formData);
-      localStorage.setItem('isLoggedIn', 'true');
-      setIsLoading(false);
-      navigate('/dashboard');
-    }, 1500);
+    const result = await dispatch(loginUser({ email: formData.email, password: formData.password }));
+    if (loginUser.fulfilled.match(result)) {
+      redirectByRole(result.payload?.user?.role);
+    }
   };
 
-  const handleGoogleLogin = () => {
-    console.log('Login with Google');
-    // Implement Google OAuth login
+  const handleGoogleLogin = async () => {
+    if (!GOOGLE_CLIENT_ID) { setError('Google login not configured (set VITE_GOOGLE_CLIENT_ID)'); return; }
+    const w: any = window;
+    if (!w.google?.accounts?.oauth2) { setError('Google SDK not loaded'); return; }
+    const client = w.google.accounts.oauth2.initTokenClient({
+      client_id: GOOGLE_CLIENT_ID,
+      scope: 'openid email profile',
+      callback: async (resp: any) => {
+        if (resp.error || !resp.access_token) { setError('Google sign-in cancelled'); return; }
+        const result = await dispatch(socialLogin({ provider: 'google', accessToken: resp.access_token }));
+        if (socialLogin.fulfilled.match(result)) redirectByRole(result.payload?.user?.role);
+      },
+    });
+    client.requestAccessToken();
   };
 
   const handleFacebookLogin = () => {
-    console.log('Login with Facebook');
-    // Implement Facebook OAuth login
+    if (!FACEBOOK_APP_ID) { setError('Facebook login not configured (set VITE_FACEBOOK_APP_ID)'); return; }
+    const w: any = window;
+    if (!w.FB) { setError('Facebook SDK not loaded'); return; }
+    w.FB.login(async (resp: any) => {
+      if (resp.status !== 'connected' || !resp.authResponse?.accessToken) {
+        setError('Facebook sign-in cancelled');
+        return;
+      }
+      const result = await dispatch(socialLogin({ provider: 'facebook', accessToken: resp.authResponse.accessToken }));
+      if (socialLogin.fulfilled.match(result)) redirectByRole(result.payload?.user?.role);
+    }, { scope: 'public_profile,email' });
   };
 
   return (

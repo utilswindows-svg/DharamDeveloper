@@ -24,5 +24,16 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <!-- Google Identity Services (for Sign in with Google) -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <!-- Facebook SDK -->
+    <script>
+      window.fbAsyncInit = function() {
+        if (window.FB && window.__FB_APP_ID) {
+          window.FB.init({ appId: window.__FB_APP_ID, cookie: true, xfbml: false, version: 'v18.0' });
+        }
+      };
+    </script>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
   </body>
 </html>

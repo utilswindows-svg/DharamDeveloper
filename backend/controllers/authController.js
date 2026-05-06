@@ -4,20 +4,25 @@ const { User } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { issueTokens, rotateRefresh, revokeAll } = require('../services/tokenService');
 const { createAndSendOtp, verifyOtp, isVerifiedForReset, clearVerified } = require('../services/otpService');
+const axios = require('axios');
 
 const SALT_ROUNDS = 12;
 
 exports.signup = async (req, res, next) => {
   try {
-    const { name, email, phone, password } = req.body;
+    const { name, email, phone, password, role } = req.body;
     const exists = await User.findOne({ where: { email } });
     if (exists) throw new ApiError(409, 'Email already registered');
     const hashed = await bcrypt.hash(password, SALT_ROUNDS);
-    const user = await User.create({ name, email, phone: phone || null, password: hashed });
+    const user = await User.create({
+      name, email, phone: phone || null, password: hashed,
+      role: role === 'admin' ? 'admin' : 'user',
+      provider: 'local',
+    });
     const tokens = await issueTokens(user);
     res.status(201).json({
       success: true, message: 'Account created',
-      user: { id: user.id, name: user.name, email: user.email, phone: user.phone },
+      user: { id: user.id, name: user.name, email: user.email, phone: user.phone, role: user.role, avatar: user.avatar },
       ...tokens,
     });
   } catch (e) { next(e); }
@@ -28,12 +33,13 @@ exports.login = async (req, res, next) => {
     const { email, password } = req.body;
     const user = await User.findOne({ where: { email } });
     if (!user) throw new ApiError(401, 'Invalid credentials');
+    if (!user.password) throw new ApiError(401, `Use ${user.provider} sign-in for this account`);
     const ok = await bcrypt.compare(password, user.password);
     if (!ok) throw new ApiError(401, 'Invalid credentials');
     const tokens = await issueTokens(user);
     res.json({
       success: true,
-      user: { id: user.id, name: user.name, email: user.email, phone: user.phone },
+      user: { id: user.id, name: user.name, email: user.email, phone: user.phone, role: user.role, avatar: user.avatar },
       ...tokens,
     });
   } catch (e) { next(e); }
@@ -127,4 +133,59 @@ exports.resetPassword = async (req, res, next) => {
     await revokeAll(user.id); // invalidate existing sessions on password change
     res.json({ success: true, message: 'Password updated. Please log in again.' });
   } catch (e) { next(e); }
+};
+
+/**
+ * POST /auth/social
+ * Body: { provider: 'google'|'facebook', accessToken }
+ * Verifies token with provider, creates/links user, returns app tokens.
+ */
+exports.socialLogin = async (req, res, next) => {
+  try {
+    const { provider, accessToken } = req.body;
+    if (!['google', 'facebook'].includes(provider)) throw new ApiError(400, 'Invalid provider');
+    if (!accessToken) throw new ApiError(400, 'accessToken required');
+
+    let profile = null;
+    if (provider === 'google') {
+      const { data } = await axios.get('https://www.googleapis.com/oauth2/v3/userinfo', {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      profile = { id: data.sub, email: data.email, name: data.name || data.email, avatar: data.picture };
+    } else {
+      const { data } = await axios.get('https://graph.facebook.com/me', {
+        params: { fields: 'id,name,email,picture.type(large)', access_token: accessToken },
+      });
+      profile = { id: data.id, email: data.email, name: data.name, avatar: data.picture?.data?.url };
+    }
+
+    if (!profile.email) throw new ApiError(400, 'Provider did not return an email');
+
+    let user = await User.findOne({ where: { email: profile.email } });
+    if (!user) {
+      user = await User.create({
+        name: profile.name,
+        email: profile.email,
+        provider,
+        providerId: profile.id,
+        avatar: profile.avatar || null,
+        role: 'user',
+      });
+    } else if (user.provider !== provider) {
+      user.provider = provider;
+      user.providerId = profile.id;
+      if (profile.avatar && !user.avatar) user.avatar = profile.avatar;
+      await user.save();
+    }
+
+    const tokens = await issueTokens(user);
+    res.json({
+      success: true,
+      user: { id: user.id, name: user.name, email: user.email, phone: user.phone, role: user.role, avatar: user.avatar },
+      ...tokens,
+    });
+  } catch (e) {
+    if (e.response) return next(new ApiError(401, `Social auth failed: ${e.response.data?.error?.message || 'invalid token'}`));
+    next(e);
+  }
 };

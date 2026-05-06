@@ -5,7 +5,7 @@ import { useDispatch, useSelector, TypedUseSelectorHook } from 'react-redux';
 // ============================================================
 // Axios instance
 // ============================================================
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000/api';
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
@@ -29,6 +29,8 @@ export interface User {
   name: string;
   email: string;
   phone?: string | null;
+  role?: 'user' | 'admin';
+  avatar?: string | null;
 }
 
 interface AuthState {
@@ -50,6 +52,7 @@ interface LoginPayload { email: string; password: string; }
 interface ForgotPayload { email?: string; phone?: string; channel?: 'email' | 'sms'; }
 interface VerifyOtpPayload { email?: string; phone?: string; otp: string; channel?: 'email' | 'sms'; }
 interface ResetPasswordPayload { email?: string; phone?: string; newPassword: string; channel?: 'email' | 'sms'; }
+interface SocialLoginPayload { provider: 'google' | 'facebook'; accessToken: string; }
 
 // ============================================================
 // Helpers
@@ -136,11 +139,25 @@ export const resetPassword = createAsyncThunk(
   }
 );
 
+export const socialLogin = createAsyncThunk(
+  'auth/social',
+  async (payload: SocialLoginPayload, { rejectWithValue }) => {
+    try {
+      const { data } = await api.post('/auth/social', payload);
+      return data;
+    } catch (err) {
+      return rejectWithValue(getErrorMsg(err));
+    }
+  }
+);
+
 // ============================================================
 // Slice
 // ============================================================
 const initialState: AuthState = {
-  user: null,
+  user: (() => {
+    try { const raw = localStorage.getItem('user'); return raw ? JSON.parse(raw) : null; } catch { return null; }
+  })(),
   accessToken: localStorage.getItem('accessToken'),
   refreshToken: localStorage.getItem('refreshToken'),
   loading: false,
@@ -160,6 +177,7 @@ const authSlice = createSlice({
       state.message = null;
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
+      localStorage.removeItem('user');
       localStorage.removeItem('isLoggedIn');
     },
     clearAuthError: (state) => {
@@ -173,7 +191,10 @@ const authSlice = createSlice({
     const handleAuthFulfilled = (state: AuthState, action: PayloadAction<any>) => {
       state.loading = false;
       const { user, accessToken, refreshToken: rt, message } = action.payload || {};
-      if (user) state.user = user;
+      if (user) {
+        state.user = user;
+        localStorage.setItem('user', JSON.stringify(user));
+      }
       if (accessToken) {
         state.accessToken = accessToken;
         localStorage.setItem('accessToken', accessToken);
@@ -195,6 +216,10 @@ const authSlice = createSlice({
       .addCase(loginUser.pending, (s) => { s.loading = true; s.error = null; })
       .addCase(loginUser.fulfilled, handleAuthFulfilled)
       .addCase(loginUser.rejected, (s, a) => { s.loading = false; s.error = a.payload as string; })
+      // social
+      .addCase(socialLogin.pending, (s) => { s.loading = true; s.error = null; })
+      .addCase(socialLogin.fulfilled, handleAuthFulfilled)
+      .addCase(socialLogin.rejected, (s, a) => { s.loading = false; s.error = a.payload as string; })
       // refresh
       .addCase(refreshToken.fulfilled, handleAuthFulfilled)
       // forgot
