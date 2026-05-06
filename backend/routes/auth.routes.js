@@ -46,4 +46,10 @@ router.post('/reset-password', authLimiter,
     body('channel').optional().isIn(['email', 'sms']),
   ], validate, c.resetPassword);
 
+router.post('/social', authLimiter,
+  [
+    body('provider').isIn(['google', 'facebook']),
+    body('accessToken').isString().notEmpty(),
+  ], validate, c.socialLogin);
+
 module.exports = router;
