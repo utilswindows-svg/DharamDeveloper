@@ -33,8 +33,8 @@ function deleteRefresh(userId, jti) {
 
 async function issueTokens(user) {
   const jti = crypto.randomUUID();
-  const accessToken = signAccessToken({ sub: user.id, email: user.email });
-  const refreshToken = signRefreshToken({ sub: user.id, jti });
+  const accessToken = signAccessToken({ sub: user.id, email: user.email, role: user.role || 'user' });
+  const refreshToken = signRefreshToken({ sub: user.id, jti, role: user.role || 'user' });
   storeRefresh(user.id, jti);
   return { accessToken, refreshToken };
 }
@@ -43,7 +43,7 @@ async function rotateRefresh(oldToken) {
   const decoded = verifyRefresh(oldToken);
   if (!hasRefresh(decoded.sub, decoded.jti)) throw new Error('Refresh token revoked');
   deleteRefresh(decoded.sub, decoded.jti);
-  return issueTokens({ id: decoded.sub, email: decoded.email });
+  return issueTokens({ id: decoded.sub, email: decoded.email, role: decoded.role });
 }
 
 async function revokeAll(userId) {
