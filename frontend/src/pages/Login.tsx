@@ -46,7 +46,6 @@ const Login = () => {
 
     // Simulate login
     setTimeout(() => {
-      console.log('Login with:', formData);
       localStorage.setItem('isLoggedIn', 'true');
       setIsLoading(false);
       navigate('/dashboard');
@@ -54,12 +53,10 @@ const Login = () => {
   };
 
   const handleGoogleLogin = () => {
-    console.log('Login with Google');
     // Implement Google OAuth login
   };
 
   const handleFacebookLogin = () => {
-    console.log('Login with Facebook');
     // Implement Facebook OAuth login
   };
 
