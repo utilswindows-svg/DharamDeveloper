@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useAppSelector } from '../../store/authStore';
+import { api, logout, useAppDispatch, useAppSelector } from '../../store/authStore';
 
 interface Props {
   children: React.ReactNode;
@@ -29,10 +29,35 @@ const isTokenValid = (token: string | null): boolean => {
 
 const PrivateRoute: React.FC<Props> = ({ children, roles }) => {
   const location = useLocation();
+  const dispatch = useAppDispatch();
   const { user, accessToken, loading } = useAppSelector((s) => s.auth);
+  const [verifying, setVerifying] = useState<boolean>(!!accessToken);
+  const [verified, setVerified] = useState<boolean>(false);
+
+  // Verify session against backend once on mount when a token exists.
+  useEffect(() => {
+    let cancelled = false;
+    const run = async () => {
+      if (!accessToken || !isTokenValid(accessToken)) {
+        dispatch(logout());
+        if (!cancelled) { setVerifying(false); setVerified(false); }
+        return;
+      }
+      try {
+        await api.get('/auth/me');
+        if (!cancelled) { setVerified(true); setVerifying(false); }
+      } catch {
+        dispatch(logout());
+        if (!cancelled) { setVerified(false); setVerifying(false); }
+      }
+    };
+    run();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // While an auth request is in flight (login/refresh), don't redirect prematurely
-  if (loading) {
+  if (loading || verifying) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="h-8 w-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
@@ -40,15 +65,8 @@ const PrivateRoute: React.FC<Props> = ({ children, roles }) => {
     );
   }
 
-  // No session at all OR access token is expired/invalid
-  if (!accessToken || !user || !isTokenValid(accessToken)) {
-    // Clean up any stale credentials so the user is forced to re-login
-    if (accessToken && !isTokenValid(accessToken)) {
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('user');
-      localStorage.removeItem('isLoggedIn');
-    }
+  // No session at all OR access token is expired/invalid OR backend rejected it
+  if (!accessToken || !user || !isTokenValid(accessToken) || !verified) {
     return <Navigate to="/login" replace state={{ from: location }} />;
   }
 
