@@ -44,7 +44,7 @@ const PrivateRoute: React.FC<Props> = ({ children, roles }) => {
         return;
       }
       try {
-        await api.get('/auth/me');
+        await api.get('/users/profile');
         if (!cancelled) { setVerified(true); setVerifying(false); }
       } catch {
         dispatch(logout());
