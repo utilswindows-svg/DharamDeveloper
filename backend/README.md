@@ -1,12 +1,12 @@
-# Auth Backend — Node.js + Express + MySQL + Redis + JWT (Email & SMS OTP)
+# Auth Backend — Node.js + Express + MySQL + JWT (Email & SMS OTP)
 
-Production-ready authentication backend with signup, login, JWT (access + refresh), forgot-password OTP delivered via **real Email (Nodemailer/SMTP)** and **SMS (Twilio)**, protected routes, input validation, centralized error handling, and Redis-backed rate limiting.
+Production-ready authentication backend with signup, login, JWT (access + refresh), forgot-password OTP delivered via **real Email (Nodemailer/SMTP)** and **SMS (Twilio)**, protected routes, input validation, centralized error handling, and in-memory rate limiting.
 
 ## Tech Stack
 
 - Node.js + Express
 - MySQL via Sequelize ORM
-- Redis (OTP storage, refresh-token whitelist, rate limiting, OTP cooldown)
+- In-memory (OTP storage, refresh-token whitelist, rate limiting, OTP cooldown) — note: not suitable for multi-instance deployments
 - JWT (access + refresh)
 - bcrypt password hashing
 - express-validator
@@ -17,14 +17,14 @@ Production-ready authentication backend with signup, login, JWT (access + refres
 ## Setup
 
 ### 1. Prerequisites
-- Node.js 18+, MySQL 8+, Redis 6+
+- Node.js 18+, MySQL 8+
 - Either a working SMTP account (e.g. Gmail App Password, SendGrid SMTP key) **or** a Twilio account — or both
 
 ### 2. Install
 ```bash
 npm install
 cp .env.example .env
-# fill in DB, Redis, JWT, SMTP, and/or Twilio settings
+# fill in DB, JWT, SMTP, and/or Twilio settings
 ```
 
 ### 3. Database
@@ -40,7 +40,7 @@ npm run dev
 # server starts on http://localhost:5000
 ```
 
-On boot you'll see ✅ MySQL / ✅ Redis / ✅ SMTP. Twilio is verified lazily on first SMS send.
+On boot you'll see ✅ MySQL / ✅ SMTP. Twilio is verified lazily on first SMS send.
 
 ---
 
@@ -140,19 +140,19 @@ curl -X POST http://localhost:5000/api/auth/reset-password \
 ## Security Notes
 
 - Passwords hashed with bcrypt (cost 12).
-- OTPs stored in Redis, single-use, expire after `OTP_TTL_SECONDS` (default 600s).
+- OTPs stored in single-use, expire after `OTP_TTL_SECONDS` (default 600s).
 - **OTP resend cooldown** of 60 seconds per (channel, identifier) prevents spam → returns `429`.
 - Forgot-password endpoint always returns 200 to avoid user enumeration (except cooldown 429s).
-- Refresh tokens whitelisted in Redis with `jti` so they can be rotated and revoked.
+- Refresh tokens whitelisted in memory with `jti` so they can be rotated and revoked.
 - Password reset revokes all refresh tokens for that user.
-- Redis-backed rate limits: general 100/15min, auth 20/15min, OTP 5/15min.
+- in-memory rate limits: general 100/15min, auth 20/15min, OTP 5/15min.
 - helmet sets secure HTTP headers; CORS enabled.
 - Phone numbers validated as E.164.
 
 ## Project Structure
 ```
 .
-├── config/         # db, redis, mailer (SMTP), twilio
+├── config/         # db, mailer (SMTP), twilio
 ├── controllers/    # auth, user
 ├── middleware/     # auth, validate, error, rateLimit
 ├── models/         # User (with phone)

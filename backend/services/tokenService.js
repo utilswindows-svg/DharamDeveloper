@@ -1,30 +1,53 @@
 const crypto = require('crypto');
-const { redisClient } = require('../config/redis');
 const { signAccessToken, signRefreshToken, verifyRefresh } = require('../utils/jwt');
 
-const refreshKey = (userId, jti) => `refresh:${userId}:${jti}`;
-const REFRESH_TTL = 7 * 24 * 60 * 60;
+const REFRESH_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+
+// In-memory refresh token store: Map<userId, Map<jti, expiresAt>>
+const refreshStore = new Map();
+
+const cleanup = setInterval(() => {
+  const now = Date.now();
+  for (const [uid, jtis] of refreshStore) {
+    for (const [jti, exp] of jtis) if (exp < now) jtis.delete(jti);
+    if (jtis.size === 0) refreshStore.delete(uid);
+  }
+}, 5 * 60_000);
+if (cleanup.unref) cleanup.unref();
+
+function storeRefresh(userId, jti) {
+  if (!refreshStore.has(userId)) refreshStore.set(userId, new Map());
+  refreshStore.get(userId).set(jti, Date.now() + REFRESH_TTL_MS);
+}
+function hasRefresh(userId, jti) {
+  const jtis = refreshStore.get(userId);
+  if (!jtis) return false;
+  const exp = jtis.get(jti);
+  if (!exp) return false;
+  if (exp < Date.now()) { jtis.delete(jti); return false; }
+  return true;
+}
+function deleteRefresh(userId, jti) {
+  refreshStore.get(userId)?.delete(jti);
+}
 
 async function issueTokens(user) {
   const jti = crypto.randomUUID();
   const accessToken = signAccessToken({ sub: user.id, email: user.email });
   const refreshToken = signRefreshToken({ sub: user.id, jti });
-  await redisClient.set(refreshKey(user.id, jti), '1', { EX: REFRESH_TTL });
+  storeRefresh(user.id, jti);
   return { accessToken, refreshToken };
 }
 
 async function rotateRefresh(oldToken) {
   const decoded = verifyRefresh(oldToken);
-  const exists = await redisClient.get(refreshKey(decoded.sub, decoded.jti));
-  if (!exists) throw new Error('Refresh token revoked');
-  await redisClient.del(refreshKey(decoded.sub, decoded.jti));
+  if (!hasRefresh(decoded.sub, decoded.jti)) throw new Error('Refresh token revoked');
+  deleteRefresh(decoded.sub, decoded.jti);
   return issueTokens({ id: decoded.sub, email: decoded.email });
 }
 
 async function revokeAll(userId) {
-  for await (const key of redisClient.scanIterator({ MATCH: `refresh:${userId}:*` })) {
-    await redisClient.del(key);
-  }
+  refreshStore.delete(userId);
 }
 
 module.exports = { issueTokens, rotateRefresh, revokeAll };

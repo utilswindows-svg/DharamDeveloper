@@ -1,7 +1,7 @@
 {
   "name": "auth-backend",
   "version": "1.1.0",
-  "description": "Production-ready Node.js + Express + MySQL + Redis + JWT auth backend with Email/SMS OTP",
+  "description": "Production-ready Node.js + Express + MySQL + JWT auth backend with Email/SMS OTP",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -21,11 +21,11 @@
     "morgan": "^1.10.0",
     "mysql2": "^3.11.3",
     "nodemailer": "^6.9.15",
-    "rate-limit-redis": "^4.2.0",
-    "redis": "^4.7.0",
     "sequelize": "^6.37.3",
     "swagger-ui-express": "^4.6.3",
     "twilio": "^5.3.3"
   },
-  "devDependencies": { "nodemon": "^3.1.7" }
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
 }
