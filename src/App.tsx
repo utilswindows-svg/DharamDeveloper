@@ -39,8 +39,6 @@ import AdminSettings from "./pages/admin/AdminSettings.tsx";
 import AdminPayments from "./pages/admin/AdminPayments.tsx";
 import PrivateRoute from "./components/routes/PrivateRoute";
 import PublicRoute from "./components/routes/PublicRoute";
-import { Provider } from "react-redux";
-import { store } from "./store/authStore";
 
 const queryClient = new QueryClient();
 
