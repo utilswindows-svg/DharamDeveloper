@@ -9,15 +9,19 @@ const SALT_ROUNDS = 12;
 
 exports.signup = async (req, res, next) => {
   try {
-    const { name, email, phone, password } = req.body;
+    const { name, email, phone, password, role } = req.body;
     const exists = await User.findOne({ where: { email } });
     if (exists) throw new ApiError(409, 'Email already registered');
     const hashed = await bcrypt.hash(password, SALT_ROUNDS);
-    const user = await User.create({ name, email, phone: phone || null, password: hashed });
+    const user = await User.create({
+      name, email, phone: phone || null, password: hashed,
+      role: role === 'admin' ? 'admin' : 'user',
+      provider: 'local',
+    });
     const tokens = await issueTokens(user);
     res.status(201).json({
       success: true, message: 'Account created',
-      user: { id: user.id, name: user.name, email: user.email, phone: user.phone },
+      user: { id: user.id, name: user.name, email: user.email, phone: user.phone, role: user.role, avatar: user.avatar },
       ...tokens,
     });
   } catch (e) { next(e); }
@@ -28,12 +32,13 @@ exports.login = async (req, res, next) => {
     const { email, password } = req.body;
     const user = await User.findOne({ where: { email } });
     if (!user) throw new ApiError(401, 'Invalid credentials');
+    if (!user.password) throw new ApiError(401, `Use ${user.provider} sign-in for this account`);
     const ok = await bcrypt.compare(password, user.password);
     if (!ok) throw new ApiError(401, 'Invalid credentials');
     const tokens = await issueTokens(user);
     res.json({
       success: true,
-      user: { id: user.id, name: user.name, email: user.email, phone: user.phone },
+      user: { id: user.id, name: user.name, email: user.email, phone: user.phone, role: user.role, avatar: user.avatar },
       ...tokens,
     });
   } catch (e) { next(e); }
