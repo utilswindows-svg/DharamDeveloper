@@ -1,6 +1,9 @@
 import LegalPageLayout from "./legal/LegalPageLayout";
+import SEO from "@/components/SEO";
 
 const QualityPolicy = () => (
+  <>
+    <SEO title="Quality Policy" description="Our commitment to software quality, security, and customer satisfaction." path="/quality-policy" keywords="quality policy, standards" type="website" />
   <LegalPageLayout
     title="Quality Policy"
     subtitle="Our commitment to delivering reliable, secure, and high-performance software."
@@ -60,6 +63,7 @@ const QualityPolicy = () => (
     <h2>Quality Assurance Contact</h2>
     <p>For quality concerns, contact <strong>quality@windowsutils.com</strong>.</p>
   </LegalPageLayout>
+  </>
 );
 
 export default QualityPolicy;

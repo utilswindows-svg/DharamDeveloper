@@ -1,6 +1,9 @@
 import LegalPageLayout from "./legal/LegalPageLayout";
+import SEO from "@/components/SEO";
 
 const Privacy = () => (
+  <>
+    <SEO title="Privacy Policy" description="Read the WindowsUtils Privacy Policy — how we collect, use, and protect your data." path="/privacy" keywords="privacy policy, data protection, GDPR" type="website" />
   <LegalPageLayout
     title="Privacy Statement"
     subtitle="Your privacy matters. Here's how we collect, use, and protect your information."
@@ -60,6 +63,7 @@ const Privacy = () => (
     <h2>8. Contact</h2>
     <p>For privacy concerns, contact our Data Protection Officer at <strong>privacy@windowsutils.com</strong>.</p>
   </LegalPageLayout>
+  </>
 );
 
 export default Privacy;

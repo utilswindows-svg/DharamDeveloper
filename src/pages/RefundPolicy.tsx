@@ -1,6 +1,9 @@
 import LegalPageLayout from "./legal/LegalPageLayout";
+import SEO from "@/components/SEO";
 
 const RefundPolicy = () => (
+  <>
+    <SEO title="Refund Policy" description="WindowsUtils 30-day money-back guarantee and refund policy details." path="/refund-policy" keywords="refund, money back guarantee" type="website" />
   <LegalPageLayout
     title="Refund Policy"
     subtitle="30-day money-back guarantee on all our products. No questions asked."
@@ -58,6 +61,7 @@ const RefundPolicy = () => (
     <h2>8. Contact</h2>
     <p>For refund-related queries: <strong>refunds@windowsutils.com</strong></p>
   </LegalPageLayout>
+  </>
 );
 
 export default RefundPolicy;
