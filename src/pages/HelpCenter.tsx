@@ -3,6 +3,7 @@ import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
 import { Search, ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
+import SEO from "@/components/SEO";
 
 const faqs = [
   { q: "How do I install WindowsUtils software?", a: "Download the installer from the product page, run the .exe file, and follow the on-screen instructions. All our installers are digitally signed for your safety.", category: "Installation" },
@@ -29,6 +30,7 @@ const HelpCenter = () => {
 
   return (
     <div className="min-h-screen">
+      <SEO title="Help Center" description="Browse guides, FAQs, and tutorials for WindowsUtils products. Find answers fast." path="/help" keywords="help center, FAQ, tutorials, guides" type="website" />
       <Navbar />
       <section className="hero-gradient py-20">
         <div className="section-container text-center">

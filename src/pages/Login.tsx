@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import {
+import SEO from "@/components/SEO";
   useAppDispatch,
   useAppSelector,
   loginUser,
@@ -91,6 +92,7 @@ const Login = () => {
 
   return (
     <div className="min-h-screen">
+      <SEO title="Login" description="Sign in to your WindowsUtils account to manage licenses, downloads, and billing." path="/login" keywords="login, sign in, account" type="website" />
       <Navbar />
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 px-4 py-12">
       <motion.div

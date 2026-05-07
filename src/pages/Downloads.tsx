@@ -4,6 +4,7 @@ import { Download, Calendar, CheckCircle, FileDown, HardDrive } from 'lucide-rea
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import {
+import SEO from "@/components/SEO";
   Table,
   TableBody,
   TableCell,
@@ -64,6 +65,7 @@ const Downloads = () => {
 
   return (
     <div className="min-h-screen">
+      <SEO title="My Downloads" description="Access your purchased WindowsUtils software downloads." path="/downloads" keywords="downloads, my software" type="website" noIndex />
       <Navbar />
 
       {/* Header */}

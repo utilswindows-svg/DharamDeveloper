@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { useAppDispatch, useAppSelector, signupUser, clearAuthError } from '../store/authStore';
+import SEO from "@/components/SEO";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -83,6 +84,7 @@ const Signup = () => {
 
   return (
     <div className="min-h-screen">
+      <SEO title="Create Account" description="Create a free WindowsUtils account to manage purchases, downloads, and licenses." path="/signup" keywords="signup, register, create account" type="website" />
       <Navbar />
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 px-4 py-12">
       <motion.div

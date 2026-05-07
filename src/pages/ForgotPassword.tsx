@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import {
+import SEO from "@/components/SEO";
   useAppDispatch,
   useAppSelector,
   forgotPassword,
@@ -77,6 +78,7 @@ const ForgotPassword = () => {
 
   const Card: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     <div className="min-h-screen">
+      <SEO title="Reset Password" description="Reset your WindowsUtils account password securely via email verification." path="/forgot-password" keywords="forgot password, reset password, account recovery" type="website" />
       <Navbar />
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 px-4 py-12">
         <motion.div

@@ -38,6 +38,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
+import SEO from "@/components/SEO";
 
 interface Activation {
   id: string;
@@ -244,6 +245,7 @@ const Licenses = () => {
 
   return (
     <div className="min-h-screen">
+      <SEO title="My Licenses" description="View and manage your WindowsUtils license keys and activations." path="/licenses" keywords="licenses, license keys, activations" type="website" noIndex />
       <Navbar />
 
       <section className="bg-hero text-hero-foreground py-16">
