@@ -3,6 +3,8 @@ import { motion } from "framer-motion";
 import { ArrowRight, Shield, Zap, HardDrive, FileText } from "lucide-react";
 import { Link } from "react-router-dom";
 import heroBg from "@/assets/hero-bg.jpg";
+import { api } from "@/store/authStore";
+import { toast } from "@/hooks/use-toast";
 
 const categories = [
   { icon: HardDrive, label: "Data Recovery", color: "bg-primary" },
@@ -18,21 +20,40 @@ const HeroSection = () => {
     message: "",
   });
   const [submitted, setSubmitted] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
 
   const handleFeedbackChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFeedbackForm(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleFeedbackSubmit = (e: React.FormEvent) => {
+  const handleFeedbackSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
-    console.log("Feedback submitted:", feedbackForm);
-    setSubmitted(true);
-    setTimeout(() => {
+    const { name, email, message } = feedbackForm;
+    if (!name.trim() || !email.trim() || !message.trim()) {
+      toast({ title: "All fields are required", variant: "destructive" });
+      return;
+    }
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      toast({ title: "Please enter a valid email", variant: "destructive" });
+      return;
+    }
+    try {
+      setLoading(true);
+      const { data } = await api.post("/feedback", { name, email, message });
+      toast({ title: data?.message || "Feedback submitted. Thank you!" });
+      setSubmitted(true);
       setFeedbackForm({ name: "", email: "", message: "" });
-      setSubmitted(false);
-    }, 2000);
+      setTimeout(() => setSubmitted(false), 3000);
+    } catch (err: any) {
+      toast({
+        title: "Failed to submit feedback",
+        description: err?.response?.data?.message || err?.message || "Please try again",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -163,9 +184,10 @@ const HeroSection = () => {
                   </div>
                   <button
                     type="submit"
-                    className="w-full rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground transition-all hover:opacity-90 hover:shadow-md"
+                    disabled={loading}
+                    className="w-full rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground transition-all hover:opacity-90 hover:shadow-md disabled:opacity-60"
                   >
-                    Submit Feedback
+                    {loading ? "Submitting..." : "Submit Feedback"}
                   </button>
                 </form>
               )}

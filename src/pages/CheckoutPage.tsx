@@ -13,7 +13,7 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import SEO from "@/components/SEO";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
-import { api } from "@/store/authStore";
+import { api, useAppDispatch, useAppSelector } from "@/store/authStore";
 
 const CheckoutPage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -21,12 +21,15 @@ const CheckoutPage = () => {
   const licenseIndex = parseInt(searchParams.get("license") || "0", 10);
   const product = slug ? products[slug] : undefined;
   const { toast } = useToast();
+  const dispatch = useAppDispatch();
+  const currentUser = useAppSelector((s) => s.auth.user);
   const [billing, setBilling] = useState({
     firstName: "", lastName: "", email: "", company: "", country: "", zip: "",
   });
   const [orderId, setOrderId] = useState<number | null>(null);
   const [savingBilling, setSavingBilling] = useState(false);
   const [paidOrder, setPaidOrder] = useState<any>(null);
+  const [accountInfo, setAccountInfo] = useState<{ created: boolean; tempPassword?: string } | null>(null);
 
   if (!product) return <Navigate to="/" replace />;
 
@@ -48,7 +51,7 @@ const CheckoutPage = () => {
     }
     setSavingBilling(true);
     try {
-      const { data } = await api.post("/orders", {
+      const { data } = await api.post("/user/orders", {
         ...billing,
         productSlug: product.slug,
         productTitle: product.title,
@@ -60,6 +63,29 @@ const CheckoutPage = () => {
         currency: "USD",
       });
       setOrderId(data.order.id);
+      // Persist tokens + user so the buyer is logged in immediately
+      if (data.accessToken) {
+        localStorage.setItem("accessToken", data.accessToken);
+        localStorage.setItem("isLoggedIn", "true");
+      }
+      if (data.refreshToken) localStorage.setItem("refreshToken", data.refreshToken);
+      if (data.user) {
+        localStorage.setItem("user", JSON.stringify(data.user));
+        // Update redux store
+        dispatch({
+          type: "auth/login/fulfilled",
+          payload: { user: data.user, accessToken: data.accessToken, refreshToken: data.refreshToken },
+        });
+      }
+      if (data.createdAccount) {
+        setAccountInfo({ created: true, tempPassword: data.tempPassword });
+        toast({
+          title: "Account created & logged in",
+          description: `A temporary password was generated. Please change it from your profile.`,
+        });
+      } else if (!currentUser) {
+        toast({ title: "Logged in", description: `Welcome back, ${data.user?.name || data.user?.email}` });
+      }
       return data.order.id as number;
     } catch (err: any) {
       toast({
@@ -183,6 +209,14 @@ const CheckoutPage = () => {
                           {paidOrder.licenseKey}
                         </p>
                       )}
+                      {accountInfo?.created && accountInfo.tempPassword && (
+                        <div className="mt-4 text-left border border-border rounded-lg p-3 bg-background">
+                          <p className="text-xs font-semibold text-foreground mb-1">Your new account</p>
+                          <p className="text-xs text-muted-foreground">Email: <span className="font-mono">{paidOrder.email}</span></p>
+                          <p className="text-xs text-muted-foreground">Temporary password: <span className="font-mono">{accountInfo.tempPassword}</span></p>
+                          <p className="text-[11px] text-muted-foreground mt-2">Please change your password from your profile after logging in.</p>
+                        </div>
+                      )}
                     </div>
                   ) : !paypalClientId ? (
                     <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-muted-foreground">
@@ -197,14 +231,14 @@ const CheckoutPage = () => {
                         createOrder={async () => {
                           const id = await saveBilling();
                           if (!id) throw new Error("Billing not saved");
-                          const { data } = await api.post(`/orders/${id}/paypal/create`);
+                          const { data } = await api.post(`/user/orders/${id}/paypal/create`);
                           return data.paypalOrderId as string;
                         }}
                         onApprove={async (data) => {
                           const id = orderId;
                           if (!id) return;
                           try {
-                            const { data: res } = await api.post(`/orders/${id}/paypal/capture`, {
+                            const { data: res } = await api.post(`/user/orders/${id}/paypal/capture`, {
                               paypalOrderId: data.orderID,
                             });
                             setPaidOrder(res.order);
