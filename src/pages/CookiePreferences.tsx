@@ -179,6 +179,7 @@ const CookiePreferences = () => {
         <a href="/privacy" className="text-primary hover:underline">Privacy Statement</a>.
       </p>
     </LegalPageLayout>
+    </>
   );
 };
 
