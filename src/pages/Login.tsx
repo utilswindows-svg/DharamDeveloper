@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import SEO from "@/components/SEO";
 import { motion } from 'framer-motion';
 import { Mail, Lock, Eye, EyeOff, User } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import {
-import SEO from "@/components/SEO";
   useAppDispatch,
   useAppSelector,
   loginUser,

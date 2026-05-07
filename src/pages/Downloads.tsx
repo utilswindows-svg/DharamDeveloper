@@ -1,10 +1,10 @@
 import React from 'react';
+import SEO from "@/components/SEO";
 import { motion } from 'framer-motion';
 import { Download, Calendar, CheckCircle, FileDown, HardDrive } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import {
-import SEO from "@/components/SEO";
   Table,
   TableBody,
   TableCell,
