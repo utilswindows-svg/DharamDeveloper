@@ -1,4 +1,15 @@
 import { Mail, FileInput, MailOpen, FileOutput, HardDrive, FileText, Cpu } from "lucide-react";
+import dashboardImg from "@/assets/screenshots/dashboard.jpg";
+import previewImg from "@/assets/screenshots/preview.jpg";
+import batchImg from "@/assets/screenshots/batch.jpg";
+import reportImg from "@/assets/screenshots/report.jpg";
+import mboxVideo from "@/assets/videos/mbox-to-pdf.mp4.asset.json";
+import pdfVideo from "@/assets/videos/pdf-tools.mp4.asset.json";
+import pstVideo from "@/assets/videos/pst-migration.mp4.asset.json";
+import msgMigVideo from "@/assets/videos/msg-migration.mp4.asset.json";
+import msgPdfVideo from "@/assets/videos/msg-to-pdf.mp4.asset.json";
+import recoveryVideo from "@/assets/videos/data-recovery.mp4.asset.json";
+import optimizerVideo from "@/assets/videos/pc-optimizer.mp4.asset.json";
 
 export interface LicenseData {
   name: string;
@@ -20,6 +31,7 @@ export interface ScreenshotData {
   title: string;
   caption: string;
   accent: string; 
+  image?: string;
 }
 
 export interface ProductData {
@@ -43,10 +55,10 @@ export interface ProductData {
 
 // Shared defaults applied to every product (can be overridden per product)
 const defaultScreenshots: ScreenshotData[] = [
-  { title: "Main Dashboard", caption: "Clean, intuitive interface — get started in seconds.", accent: "from-primary/30 to-accent/20" },
-  { title: "Smart Preview", caption: "Preview files before processing to avoid surprises.", accent: "from-accent/30 to-success/20" },
-  { title: "Batch Processing", caption: "Run hundreds of operations in a single workflow.", accent: "from-success/30 to-teal/20" },
-  { title: "Detailed Reports", caption: "Track progress with real-time logs and reports.", accent: "from-teal/30 to-primary/20" },
+  { title: "Main Dashboard", caption: "Clean, intuitive interface — get started in seconds.", accent: "from-primary/30 to-accent/20", image: dashboardImg },
+  { title: "Smart Preview", caption: "Preview files before processing to avoid surprises.", accent: "from-accent/30 to-success/20", image: previewImg },
+  { title: "Batch Processing", caption: "Run hundreds of operations in a single workflow.", accent: "from-success/30 to-teal/20", image: batchImg },
+  { title: "Detailed Reports", caption: "Track progress with real-time logs and reports.", accent: "from-teal/30 to-primary/20", image: reportImg },
 ];
 
 const defaultReviews: ReviewData[] = [
@@ -56,7 +68,15 @@ const defaultReviews: ReviewData[] = [
   { name: "Marcus Johnson", role: "Freelance Developer", rating: 5, initials: "MJ", text: "Best tool I've used in this category. The interface is clean and there are no annoying upsells." },
 ];
 
-const defaultVideo = "https://www.w3schools.com/html/mov_bbb.mp4";
+const productVideos: Record<string, string> = {
+  "mbox-to-pdf": mboxVideo.url,
+  "pdf-tools": pdfVideo.url,
+  "pst-migration": pstVideo.url,
+  "msg-migration": msgMigVideo.url,
+  "msg-to-pdf": msgPdfVideo.url,
+  "data-recovery": recoveryVideo.url,
+  "pc-optimizer": optimizerVideo.url,
+};
 
 export const products: Record<string, ProductData> = {
   "mbox-to-pdf": {
@@ -314,6 +334,6 @@ export const products: Record<string, ProductData> = {
 // Inject shared defaults so every product page has screenshots, video, and reviews.
 Object.values(products).forEach((p) => {
   if (!p.screenshots) p.screenshots = defaultScreenshots;
-  if (!p.videoUrl) p.videoUrl = defaultVideo;
+  if (!p.videoUrl) p.videoUrl = productVideos[p.slug];
   if (!p.reviews) p.reviews = defaultReviews;
 });
