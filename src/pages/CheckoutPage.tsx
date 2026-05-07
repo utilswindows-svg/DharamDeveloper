@@ -209,6 +209,14 @@ const CheckoutPage = () => {
                           {paidOrder.licenseKey}
                         </p>
                       )}
+                      {accountInfo?.created && accountInfo.tempPassword && (
+                        <div className="mt-4 text-left border border-border rounded-lg p-3 bg-background">
+                          <p className="text-xs font-semibold text-foreground mb-1">Your new account</p>
+                          <p className="text-xs text-muted-foreground">Email: <span className="font-mono">{paidOrder.email}</span></p>
+                          <p className="text-xs text-muted-foreground">Temporary password: <span className="font-mono">{accountInfo.tempPassword}</span></p>
+                          <p className="text-[11px] text-muted-foreground mt-2">Please change your password from your profile after logging in.</p>
+                        </div>
+                      )}
                     </div>
                   ) : !paypalClientId ? (
                     <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-muted-foreground">
