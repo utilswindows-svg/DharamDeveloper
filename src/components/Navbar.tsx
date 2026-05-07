@@ -13,17 +13,7 @@ const productCategories = [
     color: "text-rose-500",
     bg: "bg-rose-500/10",
     items: [
-      { name: "PDF Tools", desc: "Unlock, merge & convert PDFs", href: "/products/pdf-tools" },
-    ],
-  },
-  {
-    title: "Recovery & Optimization",
-    icon: HardDrive,
-    color: "text-emerald-500",
-    bg: "bg-emerald-500/10",
-    items: [
-      { name: "Data Recovery", desc: "Restore lost or deleted files", href: "/products/data-recovery" },
-      { name: "PC Optimizer", desc: "Boost Windows performance", href: "/products/pc-optimizer" },
+      { name: "PDF Unlocker", desc: "Unlock, merge & convert PDFs", href: "/products/pdf-tools" },
     ],
   },
    {
@@ -33,9 +23,6 @@ const productCategories = [
     bg: "bg-blue-500/10",
     items: [
       { name: "MBox to PDF", desc: "Convert MBOX emails to PDF", href: "/products/mbox-to-pdf" },
-      { name: "PST Migration", desc: "Migrate Outlook PST files", href: "/products/pst-migration" },
-      { name: "MSG Migration", desc: "Move MSG files seamlessly", href: "/products/msg-migration" },
-      { name: "MSG to PDF", desc: "Export MSG to PDF format", href: "/products/msg-to-pdf" },
     ],
   },
 ];
