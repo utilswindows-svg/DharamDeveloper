@@ -1,8 +1,9 @@
 import { Mail, FileInput, MailOpen, FileOutput, HardDrive, FileText, Cpu } from "lucide-react";
-import dashboardImg from "@/assets/screenshots/dashboard.jpg";
-import previewImg from "@/assets/screenshots/preview.jpg";
-import batchImg from "@/assets/screenshots/batch.jpg";
-import reportImg from "@/assets/screenshots/report.jpg";
+
+import dashboardImgPDF from "@/assets/screenshots/pdfunlocker/main-windows.png";
+import previewImgPDF from "@/assets/screenshots/pdfunlocker/show-file.png";
+import batchImgPDF from "@/assets/screenshots/pdfunlocker/add-file.png";
+import reportImgPDF from "@/assets/screenshots/pdfunlocker/after-remove-password.png";
 import mboxVideo from "@/assets/videos/mbox-to-pdf.mp4.asset.json";
 import pdfVideo from "@/assets/videos/pdf-tools.mp4.asset.json";
 import pstVideo from "@/assets/videos/pst-migration.mp4.asset.json";
@@ -54,11 +55,11 @@ export interface ProductData {
 }
 
 // Shared defaults applied to every product (can be overridden per product)
-const defaultScreenshots: ScreenshotData[] = [
-  { title: "Main Dashboard", caption: "Clean, intuitive interface — get started in seconds.", accent: "from-primary/30 to-accent/20", image: dashboardImg },
-  { title: "Smart Preview", caption: "Preview files before processing to avoid surprises.", accent: "from-accent/30 to-success/20", image: previewImg },
-  { title: "Batch Processing", caption: "Run hundreds of operations in a single workflow.", accent: "from-success/30 to-teal/20", image: batchImg },
-  { title: "Detailed Reports", caption: "Track progress with real-time logs and reports.", accent: "from-teal/30 to-primary/20", image: reportImg },
+const defaultScreenshotspDF: ScreenshotData[] = [
+  { title: "Main Dashboard", caption: "Clean, intuitive interface — get started in seconds.", accent: "from-primary/30 to-accent/20", image: dashboardImgPDF },
+  { title: "Smart Preview", caption: "Preview files before processing to avoid surprises.", accent: "from-accent/30 to-success/20", image: previewImgPDF },
+  { title: "Batch Processing", caption: "Run hundreds of operations in a single workflow.", accent: "from-success/30 to-teal/20", image: batchImgPDF },
+  { title: "Detailed Reports", caption: "Track progress with real-time logs and reports.", accent: "from-teal/30 to-primary/20", image: reportImgPDF },
 ];
 
 const defaultReviews: ReviewData[] = [
@@ -333,7 +334,7 @@ export const products: Record<string, ProductData> = {
 
 // Inject shared defaults so every product page has screenshots, video, and reviews.
 Object.values(products).forEach((p) => {
-  if (!p.screenshots) p.screenshots = defaultScreenshots;
+  if (!p.screenshots) p.screenshots = defaultScreenshotspDF;
   if (!p.videoUrl) p.videoUrl = productVideos[p.slug];
   if (!p.reviews) p.reviews = defaultReviews;
 });
