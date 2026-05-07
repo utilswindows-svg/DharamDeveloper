@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Mail, Phone, Clock, MessageSquare, FileQuestion, BookOpen, X } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import SEO from "@/components/SEO";
 
 const Support = () => {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
@@ -62,6 +63,7 @@ const Support = () => {
 
   return (
     <div className="min-h-screen">
+      <SEO title="Customer Support" description="Get help from the WindowsUtils support team. Submit tickets, browse FAQs, or contact us 24/7." path="/support" keywords="support, help, customer service, contact" type="website" />
       <Navbar />
       <section className="hero-gradient py-20">
         <div className="section-container">

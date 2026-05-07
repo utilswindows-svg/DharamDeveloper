@@ -6,7 +6,11 @@ const User = sequelize.define('User', {
   name:     { type: DataTypes.STRING(100), allowNull: false },
   email:    { type: DataTypes.STRING(255), allowNull: false, unique: true, validate: { isEmail: true } },
   phone:    { type: DataTypes.STRING(20), allowNull: true, unique: false }, // E.164 e.g. +14155552671
-  password: { type: DataTypes.STRING(255), allowNull: false },
+  password: { type: DataTypes.STRING(255), allowNull: true },
+  role:     { type: DataTypes.ENUM('user', 'admin'), allowNull: false, defaultValue: 'user' },
+  provider: { type: DataTypes.ENUM('local', 'google', 'facebook'), allowNull: false, defaultValue: 'local' },
+  providerId: { type: DataTypes.STRING(255), allowNull: true },
+  avatar:   { type: DataTypes.STRING(500), allowNull: true },
 }, { tableName: 'users', timestamps: true });
 
 module.exports = User;

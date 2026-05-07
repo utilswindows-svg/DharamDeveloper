@@ -5,7 +5,11 @@ import { useDispatch, useSelector, TypedUseSelectorHook } from 'react-redux';
 // ============================================================
 // Axios instance
 // ============================================================
+<<<<<<< HEAD
 const API_BASE_URL = 'http://localhost:5000/api';
+=======
+const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000/api';
+>>>>>>> 7d6fa35f2bbd189606164988527782cfecb01c7e
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
@@ -29,6 +33,11 @@ export interface User {
   name: string;
   email: string;
   phone?: string | null;
+<<<<<<< HEAD
+=======
+  role?: 'user' | 'admin';
+  avatar?: string | null;
+>>>>>>> 7d6fa35f2bbd189606164988527782cfecb01c7e
 }
 
 interface AuthState {
@@ -50,6 +59,10 @@ interface LoginPayload { email: string; password: string; }
 interface ForgotPayload { email?: string; phone?: string; channel?: 'email' | 'sms'; }
 interface VerifyOtpPayload { email?: string; phone?: string; otp: string; channel?: 'email' | 'sms'; }
 interface ResetPasswordPayload { email?: string; phone?: string; newPassword: string; channel?: 'email' | 'sms'; }
+<<<<<<< HEAD
+=======
+interface SocialLoginPayload { provider: 'google' | 'facebook'; accessToken: string; }
+>>>>>>> 7d6fa35f2bbd189606164988527782cfecb01c7e
 
 // ============================================================
 // Helpers
@@ -136,11 +149,32 @@ export const resetPassword = createAsyncThunk(
   }
 );
 
+<<<<<<< HEAD
+=======
+export const socialLogin = createAsyncThunk(
+  'auth/social',
+  async (payload: SocialLoginPayload, { rejectWithValue }) => {
+    try {
+      const { data } = await api.post('/auth/social', payload);
+      return data;
+    } catch (err) {
+      return rejectWithValue(getErrorMsg(err));
+    }
+  }
+);
+
+>>>>>>> 7d6fa35f2bbd189606164988527782cfecb01c7e
 // ============================================================
 // Slice
 // ============================================================
 const initialState: AuthState = {
+<<<<<<< HEAD
   user: null,
+=======
+  user: (() => {
+    try { const raw = localStorage.getItem('user'); return raw ? JSON.parse(raw) : null; } catch { return null; }
+  })(),
+>>>>>>> 7d6fa35f2bbd189606164988527782cfecb01c7e
   accessToken: localStorage.getItem('accessToken'),
   refreshToken: localStorage.getItem('refreshToken'),
   loading: false,
@@ -160,6 +194,10 @@ const authSlice = createSlice({
       state.message = null;
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
+<<<<<<< HEAD
+=======
+      localStorage.removeItem('user');
+>>>>>>> 7d6fa35f2bbd189606164988527782cfecb01c7e
       localStorage.removeItem('isLoggedIn');
     },
     clearAuthError: (state) => {
@@ -173,7 +211,14 @@ const authSlice = createSlice({
     const handleAuthFulfilled = (state: AuthState, action: PayloadAction<any>) => {
       state.loading = false;
       const { user, accessToken, refreshToken: rt, message } = action.payload || {};
+<<<<<<< HEAD
       if (user) state.user = user;
+=======
+      if (user) {
+        state.user = user;
+        localStorage.setItem('user', JSON.stringify(user));
+      }
+>>>>>>> 7d6fa35f2bbd189606164988527782cfecb01c7e
       if (accessToken) {
         state.accessToken = accessToken;
         localStorage.setItem('accessToken', accessToken);
@@ -195,6 +240,13 @@ const authSlice = createSlice({
       .addCase(loginUser.pending, (s) => { s.loading = true; s.error = null; })
       .addCase(loginUser.fulfilled, handleAuthFulfilled)
       .addCase(loginUser.rejected, (s, a) => { s.loading = false; s.error = a.payload as string; })
+<<<<<<< HEAD
+=======
+      // social
+      .addCase(socialLogin.pending, (s) => { s.loading = true; s.error = null; })
+      .addCase(socialLogin.fulfilled, handleAuthFulfilled)
+      .addCase(socialLogin.rejected, (s, a) => { s.loading = false; s.error = a.payload as string; })
+>>>>>>> 7d6fa35f2bbd189606164988527782cfecb01c7e
       // refresh
       .addCase(refreshToken.fulfilled, handleAuthFulfilled)
       // forgot

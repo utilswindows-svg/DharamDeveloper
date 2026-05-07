@@ -1,12 +1,16 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Lock, Eye, EyeOff, User, UserPlus } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { useAppDispatch, useAppSelector, signupUser, clearAuthError } from '../store/authStore';
+import SEO from "@/components/SEO";
 
 const Signup = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { loading: isLoading, error: authError } = useAppSelector((s) => s.auth);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -16,7 +20,14 @@ const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (authError) setError(authError);
+  }, [authError]);
+
+  useEffect(() => {
+    return () => { dispatch(clearAuthError()); };
+  }, [dispatch]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -26,40 +37,39 @@ const Signup = () => {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
 
     // Validation
     if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
       setError('Please fill in all fields');
-      setIsLoading(false);
       return;
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       setError('Please enter a valid email');
-      setIsLoading(false);
       return;
     }
 
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters');
-      setIsLoading(false);
+    if (formData.password.length < 8) {
+      setError('Password must be at least 8 characters');
       return;
     }
 
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
-      setIsLoading(false);
       return;
     }
 
-    // Simulate signup
-    setTimeout(() => {
-      console.log('Signup with:', formData);
-      localStorage.setItem('isLoggedIn', 'true');
-      setIsLoading(false);
+    const result = await dispatch(
+      signupUser({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+      })
+    );
+
+    if (signupUser.fulfilled.match(result)) {
       navigate('/dashboard');
-    }, 1500);
+    }
   };
 
   const handleGoogleSignup = () => {
@@ -74,6 +84,7 @@ const Signup = () => {
 
   return (
     <div className="min-h-screen">
+      <SEO title="Create Account" description="Create a free WindowsUtils account to manage purchases, downloads, and licenses." path="/signup" keywords="signup, register, create account" type="website" />
       <Navbar />
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 px-4 py-12">
       <motion.div

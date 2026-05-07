@@ -1,6 +1,9 @@
 import LegalPageLayout from "./legal/LegalPageLayout";
+import SEO from "@/components/SEO";
 
 const Eula = () => (
+  <>
+    <SEO title="End User License Agreement (EULA)" description="Read the WindowsUtils End User License Agreement." path="/eula" keywords="EULA, license agreement, terms" type="website" />
   <LegalPageLayout
     title="End User License Agreement (EULA)"
     subtitle="Please read this agreement carefully before installing or using our software."
@@ -58,6 +61,7 @@ const Eula = () => (
     <h2>9. Contact</h2>
     <p>For questions about this EULA, contact <strong>legal@windowsutils.com</strong>.</p>
   </LegalPageLayout>
+  </>
 );
 
 export default Eula;

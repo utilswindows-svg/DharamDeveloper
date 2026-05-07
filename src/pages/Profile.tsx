@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { User, Mail, Phone, MapPin, Edit2, Save, X } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import SEO from "@/components/SEO";
 
 const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -35,6 +36,7 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen">
+      <SEO title="My Profile" description="Manage your WindowsUtils profile and account information." path="/profile" keywords="profile, account info" type="website" noIndex />
       <Navbar />
 
       {/* Header */}

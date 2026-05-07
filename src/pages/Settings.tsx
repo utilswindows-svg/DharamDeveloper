@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Bell, Lock, Eye, EyeOff, Save } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import SEO from "@/components/SEO";
 
 const Settings = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -41,6 +42,7 @@ const Settings = () => {
 
   return (
     <div className="min-h-screen">
+      <SEO title="Account Settings" description="Manage your WindowsUtils account settings and security preferences." path="/settings" keywords="settings, preferences, security" type="website" noIndex />
       <Navbar />
 
       {/* Header */}

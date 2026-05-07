@@ -37,6 +37,8 @@ import AdminHelp from "./pages/admin/AdminHelp.tsx";
 import AdminProfile from "./pages/admin/AdminProfile.tsx";
 import AdminSettings from "./pages/admin/AdminSettings.tsx";
 import AdminPayments from "./pages/admin/AdminPayments.tsx";
+import PrivateRoute from "./components/routes/PrivateRoute";
+import PublicRoute from "./components/routes/PublicRoute";
 
 const queryClient = new QueryClient();
 
@@ -60,26 +62,26 @@ const App = () => (
           <Route path="/quality-policy" element={<QualityPolicy />} />
           <Route path="/legal" element={<Legal />} />
           <Route path="/cookie-preferences" element={<CookiePreferences />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/dashboard" element={<UserDashboard />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/downloads" element={<Downloads />} />
-          <Route path="/licenses" element={<Licenses />} />
-          <Route path="/billing" element={<Billing />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/admin/downloads" element={<AdminDownloads />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/admin/users" element={<AdminUsers />} />
-          <Route path="/admin/licenses" element={<AdminLicenses />} />
-          <Route path="/admin/tickets" element={<AdminTickets />} />
-          <Route path="/admin/feedback" element={<AdminFeedback />} />
-          <Route path="/admin/contacts" element={<AdminContacts />} />
-          <Route path="/admin/help" element={<AdminHelp />} />
-          <Route path="/admin/payments" element={<AdminPayments />} />
-          <Route path="/admin/profile" element={<AdminProfile />} />
-          <Route path="/admin/settings" element={<AdminSettings />} />
+          <Route path="/login" element={<PublicRoute restricted><Login /></PublicRoute>} />
+          <Route path="/signup" element={<PublicRoute restricted><Signup /></PublicRoute>} />
+          <Route path="/forgot-password" element={<PublicRoute restricted><ForgotPassword /></PublicRoute>} />
+          <Route path="/dashboard" element={<PrivateRoute><UserDashboard /></PrivateRoute>} />
+          <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
+          <Route path="/downloads" element={<PrivateRoute><Downloads /></PrivateRoute>} />
+          <Route path="/licenses" element={<PrivateRoute><Licenses /></PrivateRoute>} />
+          <Route path="/billing" element={<PrivateRoute><Billing /></PrivateRoute>} />
+          <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
+          <Route path="/admin" element={<PrivateRoute roles={["admin"]}><AdminDashboard /></PrivateRoute>} />
+          <Route path="/admin/downloads" element={<PrivateRoute roles={["admin"]}><AdminDownloads /></PrivateRoute>} />
+          <Route path="/admin/users" element={<PrivateRoute roles={["admin"]}><AdminUsers /></PrivateRoute>} />
+          <Route path="/admin/licenses" element={<PrivateRoute roles={["admin"]}><AdminLicenses /></PrivateRoute>} />
+          <Route path="/admin/tickets" element={<PrivateRoute roles={["admin"]}><AdminTickets /></PrivateRoute>} />
+          <Route path="/admin/feedback" element={<PrivateRoute roles={["admin"]}><AdminFeedback /></PrivateRoute>} />
+          <Route path="/admin/contacts" element={<PrivateRoute roles={["admin"]}><AdminContacts /></PrivateRoute>} />
+          <Route path="/admin/help" element={<PrivateRoute roles={["admin"]}><AdminHelp /></PrivateRoute>} />
+          <Route path="/admin/payments" element={<PrivateRoute roles={["admin"]}><AdminPayments /></PrivateRoute>} />
+          <Route path="/admin/profile" element={<PrivateRoute roles={["admin"]}><AdminProfile /></PrivateRoute>} />
+          <Route path="/admin/settings" element={<PrivateRoute roles={["admin"]}><AdminSettings /></PrivateRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

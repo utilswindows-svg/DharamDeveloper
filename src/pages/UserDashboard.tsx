@@ -4,6 +4,7 @@ import { User, Settings, CreditCard, Download, LogOut, Shield, Key, CheckCircle,
 import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import SEO from "@/components/SEO";
 
 const UserDashboard = () => {
   const navigate = useNavigate();
@@ -56,6 +57,7 @@ const UserDashboard = () => {
 
   return (
     <div className="min-h-screen">
+      <SEO title="My Dashboard" description="Your WindowsUtils dashboard — manage profile, downloads, licenses, and billing." path="/dashboard" keywords="dashboard, account, my account" type="website" noIndex />
       <Navbar />
 
       {/* Hero Section */}

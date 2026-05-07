@@ -58,11 +58,22 @@ export const ScreenshotsSection = ({ product }: { product: ProductData }) => {
                       </span>
                     </div>
                     <div className={`relative aspect-video bg-gradient-to-br ${shot.accent}`}>
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="rounded-lg bg-background/80 backdrop-blur-sm p-4 shadow-lg">
-                          <ImageIcon className="h-8 w-8 text-muted-foreground" />
+                      {shot.image ? (
+                        <img
+                          src={shot.image}
+                          alt={`${product.title} - ${shot.title}`}
+                          loading="lazy"
+                          width={1280}
+                          height={800}
+                          className="absolute inset-0 h-full w-full object-cover"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="rounded-lg bg-background/80 backdrop-blur-sm p-4 shadow-lg">
+                            <ImageIcon className="h-8 w-8 text-muted-foreground" />
+                          </div>
                         </div>
-                      </div>
+                      )}
                       <div className="absolute bottom-3 left-3 right-3 rounded-md bg-background/90 backdrop-blur-sm px-3 py-2">
                         <p className="text-xs font-bold text-foreground">{shot.title}</p>
                         <p className="text-[11px] text-muted-foreground">{shot.caption}</p>

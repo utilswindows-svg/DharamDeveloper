@@ -1,6 +1,7 @@
 import LegalPageLayout from "./legal/LegalPageLayout";
 import { Link } from "react-router-dom";
 import { FileText, Shield, RefreshCw, Award, Cookie, Scale } from "lucide-react";
+import SEO from "@/components/SEO";
 
 const legalDocs = [
   { icon: FileText, title: "EULA", desc: "End User License Agreement governing software use.", href: "/eula" },
@@ -11,6 +12,8 @@ const legalDocs = [
 ];
 
 const Legal = () => (
+  <>
+    <SEO title="Legal Documents" description="Browse all WindowsUtils legal documents — EULA, Privacy Policy, Refund Policy, and more." path="/legal" keywords="legal, terms, policies" type="website" />
   <LegalPageLayout
     title="Legal Information"
     subtitle="All legal documents, policies, and compliance information in one place."
@@ -79,6 +82,7 @@ const Legal = () => (
       </span>
     </div>
   </LegalPageLayout>
+  </>
 );
 
 export default Legal;

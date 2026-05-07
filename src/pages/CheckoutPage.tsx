@@ -11,6 +11,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import SEO from "@/components/SEO";
 
 const CheckoutPage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -42,6 +43,7 @@ const CheckoutPage = () => {
   return (
     <TooltipProvider>
       <div className="min-h-screen">
+      <SEO title="Checkout" description="Complete your secure purchase of WindowsUtils software." path="/checkout" keywords="checkout, payment, purchase" type="product" />
       <Navbar />
 
       {/* Header */}

@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
 import { Users, Target, Globe, Award } from "lucide-react";
+import SEO from "@/components/SEO";
 
 const values = [
   { icon: Target, title: "Mission-Driven", desc: "We build tools that solve real problems for Windows users worldwide." },
@@ -12,6 +13,7 @@ const values = [
 
 const About = () => (
   <div className="min-h-screen">
+      <SEO title="About WindowsUtils" description="Learn about WindowsUtils — over a decade building trusted Windows utility software for 1M+ users in 100+ countries." path="/about" keywords="about windowsutils, company, windows software" type="website" />
     <Navbar />
     <section className="hero-gradient py-20">
       <div className="section-container">
