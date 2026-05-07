@@ -48,7 +48,7 @@ const CheckoutPage = () => {
     }
     setSavingBilling(true);
     try {
-      const { data } = await api.post("/orders", {
+      const { data } = await api.post("/user/orders", {
         ...billing,
         productSlug: product.slug,
         productTitle: product.title,
@@ -197,14 +197,14 @@ const CheckoutPage = () => {
                         createOrder={async () => {
                           const id = await saveBilling();
                           if (!id) throw new Error("Billing not saved");
-                          const { data } = await api.post(`/orders/${id}/paypal/create`);
+                          const { data } = await api.post(`/user/orders/${id}/paypal/create`);
                           return data.paypalOrderId as string;
                         }}
                         onApprove={async (data) => {
                           const id = orderId;
                           if (!id) return;
                           try {
-                            const { data: res } = await api.post(`/orders/${id}/paypal/capture`, {
+                            const { data: res } = await api.post(`/user/orders/${id}/paypal/capture`, {
                               paypalOrderId: data.orderID,
                             });
                             setPaidOrder(res.order);
