@@ -4,6 +4,7 @@ import { CreditCard, Download, Calendar, X, Plus, Check, Trash2 } from 'lucide-r
 import jsPDF from 'jspdf';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import SEO from "@/components/SEO";
 
 const Billing = () => {
   const [paymentMethods, setPaymentMethods] = useState([
@@ -276,6 +277,7 @@ const Billing = () => {
 
   return (
     <div className="min-h-screen">
+      <SEO title="Billing & Invoices" description="View your billing history, invoices, and payment methods." path="/billing" keywords="billing, invoices, payments" type="website" noIndex />
       <Navbar />
 
       {/* Header */}

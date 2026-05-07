@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import SEO from "@/components/SEO";
 import { motion } from 'framer-motion';
 import { Mail, ArrowLeft, KeyRound, Lock, Eye, EyeOff, CheckCircle2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -77,6 +78,7 @@ const ForgotPassword = () => {
 
   const Card: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     <div className="min-h-screen">
+      <SEO title="Reset Password" description="Reset your WindowsUtils account password securely via email verification." path="/forgot-password" keywords="forgot password, reset password, account recovery" type="website" />
       <Navbar />
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 px-4 py-12">
         <motion.div

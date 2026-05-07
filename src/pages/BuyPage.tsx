@@ -7,6 +7,7 @@ import { products } from "@/data/products";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useState } from "react";
+import SEO from "@/components/SEO";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -31,6 +32,7 @@ const BuyPage = () => {
 
   return (
     <div className="min-h-screen">
+      <SEO title="Buy Software" description="Purchase a WindowsUtils license — secure checkout, instant delivery, 30-day money-back guarantee." path="/buy" keywords="buy, purchase, license, software" type="product" />
       <Navbar />
 
       {/* Hero */}

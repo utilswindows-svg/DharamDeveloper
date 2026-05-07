@@ -1,4 +1,5 @@
 import React from 'react';
+import SEO from "@/components/SEO";
 import { motion } from 'framer-motion';
 import { Download, Calendar, CheckCircle, FileDown, HardDrive } from 'lucide-react';
 import Navbar from '../components/Navbar';
@@ -64,6 +65,7 @@ const Downloads = () => {
 
   return (
     <div className="min-h-screen">
+      <SEO title="My Downloads" description="Access your purchased WindowsUtils software downloads." path="/downloads" keywords="downloads, my software" type="website" noIndex />
       <Navbar />
 
       {/* Header */}
