@@ -1,6 +1,6 @@
 import { useParams, useSearchParams, Navigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, ShieldCheck, Lock, CreditCard, Mail, User, Building2, Globe, MapPin, Info } from "lucide-react";
+import { ArrowLeft, ShieldCheck, Lock, Mail, User, Building2, Globe, MapPin, Info, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,6 +12,8 @@ import Footer from "@/components/Footer";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import SEO from "@/components/SEO";
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import { api } from "@/store/authStore";
 
 const CheckoutPage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -19,7 +21,12 @@ const CheckoutPage = () => {
   const licenseIndex = parseInt(searchParams.get("license") || "0", 10);
   const product = slug ? products[slug] : undefined;
   const { toast } = useToast();
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [billing, setBilling] = useState({
+    firstName: "", lastName: "", email: "", company: "", country: "", zip: "",
+  });
+  const [orderId, setOrderId] = useState<number | null>(null);
+  const [savingBilling, setSavingBilling] = useState(false);
+  const [paidOrder, setPaidOrder] = useState<any>(null);
 
   if (!product) return <Navigate to="/" replace />;
 
@@ -27,18 +34,53 @@ const CheckoutPage = () => {
   const Icon = product.icon;
   const tax = +(license.price * 0.18).toFixed(2);
   const total = +(license.price + tax).toFixed(2);
+  const paypalClientId = (import.meta as any).env?.VITE_PAYPAL_CLIENT_ID || "";
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsProcessing(true);
-    setTimeout(() => {
-      setIsProcessing(false);
-      toast({
-        title: "Order Placed Successfully!",
-        description: `Your license key for ${product.title} (${license.name}) will be sent to your email shortly.`,
+  const billingValid =
+    billing.firstName && billing.lastName && billing.email &&
+    billing.country && billing.zip;
+
+  const saveBilling = async (): Promise<number | null> => {
+    if (orderId) return orderId;
+    if (!billingValid) {
+      toast({ title: "Please complete billing info", variant: "destructive" });
+      return null;
+    }
+    setSavingBilling(true);
+    try {
+      const { data } = await api.post("/orders", {
+        ...billing,
+        productSlug: product.slug,
+        productTitle: product.title,
+        licenseName: license.name,
+        licenseIndex,
+        subtotal: license.price,
+        tax,
+        total,
+        currency: "USD",
       });
-    }, 2000);
+      setOrderId(data.order.id);
+      return data.order.id as number;
+    } catch (err: any) {
+      toast({
+        title: "Could not save billing info",
+        description: err?.response?.data?.message || err.message,
+        variant: "destructive",
+      });
+      return null;
+    } finally {
+      setSavingBilling(false);
+    }
   };
+
+  const handleSaveClick = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await saveBilling();
+  };
+
+  const setField = (k: keyof typeof billing) =>
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      setBilling((b) => ({ ...b, [k]: e.target.value }));
 
   return (
     <TooltipProvider>
@@ -63,7 +105,7 @@ const CheckoutPage = () => {
       {/* Main */}
       <section className="py-12 bg-background">
         <div className="section-container">
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSaveClick}>
             <div className="grid gap-10 lg:grid-cols-[1fr_380px]">
               {/* Left – Form */}
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
@@ -71,21 +113,26 @@ const CheckoutPage = () => {
                 <div className="rounded-xl border border-border bg-card p-6 mb-6">
                   <h2 className="text-lg font-bold font-heading text-foreground flex items-center gap-2 mb-5">
                     <User className="h-5 w-5 text-accent" /> Billing Information
+                    {orderId && (
+                      <span className="ml-auto text-xs font-medium text-success inline-flex items-center gap-1">
+                        <CheckCircle2 className="h-4 w-4" /> Saved
+                      </span>
+                    )}
                   </h2>
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-1.5">
                       <Label htmlFor="firstName" className="text-xs font-semibold text-muted-foreground">First Name *</Label>
-                      <Input id="firstName" placeholder="John" required />
+                      <Input id="firstName" placeholder="John" value={billing.firstName} onChange={setField("firstName")} required />
                     </div>
                     <div className="space-y-1.5">
                       <Label htmlFor="lastName" className="text-xs font-semibold text-muted-foreground">Last Name *</Label>
-                      <Input id="lastName" placeholder="Doe" required />
+                      <Input id="lastName" placeholder="Doe" value={billing.lastName} onChange={setField("lastName")} required />
                     </div>
                     <div className="sm:col-span-2 space-y-1.5">
                       <Label htmlFor="email" className="text-xs font-semibold text-muted-foreground">Email Address *</Label>
                       <div className="relative">
                         <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input id="email" type="email" placeholder="john@example.com" className="pl-10" required />
+                        <Input id="email" type="email" placeholder="john@example.com" className="pl-10" value={billing.email} onChange={setField("email")} required />
                       </div>
                       <p className="text-[11px] text-muted-foreground">License key will be delivered to this email</p>
                     </div>
@@ -93,55 +140,96 @@ const CheckoutPage = () => {
                       <Label htmlFor="company" className="text-xs font-semibold text-muted-foreground">Company Name</Label>
                       <div className="relative">
                         <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input id="company" placeholder="Company (optional)" className="pl-10" />
+                        <Input id="company" placeholder="Company (optional)" className="pl-10" value={billing.company} onChange={setField("company")} />
                       </div>
                     </div>
                     <div className="space-y-1.5">
                       <Label htmlFor="country" className="text-xs font-semibold text-muted-foreground">Country *</Label>
                       <div className="relative">
                         <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input id="country" placeholder="United States" className="pl-10" required />
+                        <Input id="country" placeholder="United States" className="pl-10" value={billing.country} onChange={setField("country")} required />
                       </div>
                     </div>
                     <div className="space-y-1.5">
                       <Label htmlFor="zip" className="text-xs font-semibold text-muted-foreground">ZIP / Postal Code *</Label>
                       <div className="relative">
                         <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input id="zip" placeholder="10001" className="pl-10" required />
+                        <Input id="zip" placeholder="10001" className="pl-10" value={billing.zip} onChange={setField("zip")} required />
                       </div>
                     </div>
                   </div>
+                  {!orderId && (
+                    <Button type="submit" variant="outline" className="mt-5 w-full" disabled={savingBilling || !billingValid}>
+                      {savingBilling ? "Saving..." : "Save Billing Info"}
+                    </Button>
+                  )}
                 </div>
 
-                {/* Payment */}
+                {/* Payment — PayPal */}
                 <div className="rounded-xl border border-border bg-card p-6">
                   <h2 className="text-lg font-bold font-heading text-foreground flex items-center gap-2 mb-5">
-                    <CreditCard className="h-5 w-5 text-accent" /> Payment Details
+                    <Lock className="h-5 w-5 text-accent" /> Pay with PayPal
                   </h2>
-                  <div className="grid gap-4">
-                    <div className="space-y-1.5">
-                      <Label htmlFor="cardName" className="text-xs font-semibold text-muted-foreground">Name on Card *</Label>
-                      <Input id="cardName" placeholder="John Doe" required />
+
+                  {paidOrder ? (
+                    <div className="rounded-lg border border-success bg-success/5 p-5 text-center">
+                      <CheckCircle2 className="h-10 w-10 text-success mx-auto mb-2" />
+                      <p className="font-bold text-foreground">Payment Successful!</p>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Order #{paidOrder.id} • License key sent to {paidOrder.email}
+                      </p>
+                      {paidOrder.licenseKey && (
+                        <p className="mt-3 font-mono text-sm bg-muted px-3 py-2 rounded inline-block">
+                          {paidOrder.licenseKey}
+                        </p>
+                      )}
                     </div>
-                    <div className="space-y-1.5">
-                      <Label htmlFor="cardNumber" className="text-xs font-semibold text-muted-foreground">Card Number *</Label>
-                      <Input id="cardNumber" placeholder="4242 4242 4242 4242" required />
+                  ) : !paypalClientId ? (
+                    <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-muted-foreground">
+                      PayPal is not configured. Set <code className="font-mono">VITE_PAYPAL_CLIENT_ID</code> in your frontend env.
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-1.5">
-                        <Label htmlFor="expiry" className="text-xs font-semibold text-muted-foreground">Expiry Date *</Label>
-                        <Input id="expiry" placeholder="MM / YY" required />
-                      </div>
-                      <div className="space-y-1.5">
-                        <Label htmlFor="cvv" className="text-xs font-semibold text-muted-foreground">CVV *</Label>
-                        <Input id="cvv" placeholder="123" required />
-                      </div>
-                    </div>
-                  </div>
+                  ) : (
+                    <PayPalScriptProvider options={{ clientId: paypalClientId, currency: "USD", intent: "capture" }}>
+                      <PayPalButtons
+                        style={{ layout: "vertical", shape: "rect", label: "paypal" }}
+                        disabled={!billingValid}
+                        forceReRender={[total, billing.email]}
+                        createOrder={async () => {
+                          const id = await saveBilling();
+                          if (!id) throw new Error("Billing not saved");
+                          const { data } = await api.post(`/orders/${id}/paypal/create`);
+                          return data.paypalOrderId as string;
+                        }}
+                        onApprove={async (data) => {
+                          const id = orderId;
+                          if (!id) return;
+                          try {
+                            const { data: res } = await api.post(`/orders/${id}/paypal/capture`, {
+                              paypalOrderId: data.orderID,
+                            });
+                            setPaidOrder(res.order);
+                            toast({
+                              title: "Payment Successful",
+                              description: `License key sent to ${res.order.email}`,
+                            });
+                          } catch (err: any) {
+                            toast({
+                              title: "Capture failed",
+                              description: err?.response?.data?.message || err.message,
+                              variant: "destructive",
+                            });
+                          }
+                        }}
+                        onError={(err) => {
+                          toast({ title: "PayPal error", description: String(err), variant: "destructive" });
+                        }}
+                      />
+                    </PayPalScriptProvider>
+                  )}
 
                   <div className="flex items-center gap-3 mt-5 p-3 rounded-lg bg-muted/50 border border-border">
                     <ShieldCheck className="h-5 w-5 text-success shrink-0" />
-                    <p className="text-xs text-muted-foreground">Your payment information is encrypted and secure. We never store your card details.</p>
+                    <p className="text-xs text-muted-foreground">Payment is processed securely by PayPal. We never see your card details.</p>
                   </div>
                 </div>
               </motion.div>
@@ -206,15 +294,10 @@ const CheckoutPage = () => {
                     <Button type="button" variant="outline" size="sm" className="shrink-0 text-xs">Apply</Button>
                   </div>
 
-                  <Button
-                    type="submit"
-                    className="w-full accent-gradient text-accent-foreground font-bold text-sm h-12"
-                    disabled={isProcessing}
-                  >
-                    {isProcessing ? "Processing..." : `Pay $${total.toFixed(2)}`}
-                  </Button>
-
-                  <p className="text-[10px] text-muted-foreground text-center mt-3">
+                  <p className="text-[11px] text-muted-foreground text-center">
+                    Complete the billing form, then pay with PayPal on the left.
+                  </p>
+                  <p className="text-[10px] text-muted-foreground text-center mt-2">
                     By completing this purchase you agree to our{" "}
                     <Link to="/eula" className="underline hover:text-foreground">EULA</Link>{" "}
                     and{" "}
