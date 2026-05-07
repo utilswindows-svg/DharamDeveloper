@@ -1,5 +1,6 @@
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
+import { HelmetProvider } from "react-helmet-async";
 import { store } from "./store/authStore";
 import App from "./App.tsx";
 import "./index.css";
@@ -13,6 +14,8 @@ if (FB_APP_ID) {
 
 createRoot(document.getElementById("root")!).render(
   <Provider store={store}>
-    <App />
+    <HelmetProvider>
+      <App />
+    </HelmetProvider>
   </Provider>
 );
