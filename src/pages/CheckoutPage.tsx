@@ -13,7 +13,7 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import SEO from "@/components/SEO";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
-import { api } from "@/store/authStore";
+import { api, useAppDispatch, useAppSelector } from "@/store/authStore";
 
 const CheckoutPage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -21,12 +21,15 @@ const CheckoutPage = () => {
   const licenseIndex = parseInt(searchParams.get("license") || "0", 10);
   const product = slug ? products[slug] : undefined;
   const { toast } = useToast();
+  const dispatch = useAppDispatch();
+  const currentUser = useAppSelector((s) => s.auth.user);
   const [billing, setBilling] = useState({
     firstName: "", lastName: "", email: "", company: "", country: "", zip: "",
   });
   const [orderId, setOrderId] = useState<number | null>(null);
   const [savingBilling, setSavingBilling] = useState(false);
   const [paidOrder, setPaidOrder] = useState<any>(null);
+  const [accountInfo, setAccountInfo] = useState<{ created: boolean; tempPassword?: string } | null>(null);
 
   if (!product) return <Navigate to="/" replace />;
 
@@ -60,6 +63,29 @@ const CheckoutPage = () => {
         currency: "USD",
       });
       setOrderId(data.order.id);
+      // Persist tokens + user so the buyer is logged in immediately
+      if (data.accessToken) {
+        localStorage.setItem("accessToken", data.accessToken);
+        localStorage.setItem("isLoggedIn", "true");
+      }
+      if (data.refreshToken) localStorage.setItem("refreshToken", data.refreshToken);
+      if (data.user) {
+        localStorage.setItem("user", JSON.stringify(data.user));
+        // Update redux store
+        dispatch({
+          type: "auth/login/fulfilled",
+          payload: { user: data.user, accessToken: data.accessToken, refreshToken: data.refreshToken },
+        });
+      }
+      if (data.createdAccount) {
+        setAccountInfo({ created: true, tempPassword: data.tempPassword });
+        toast({
+          title: "Account created & logged in",
+          description: `A temporary password was generated. Please change it from your profile.`,
+        });
+      } else if (!currentUser) {
+        toast({ title: "Logged in", description: `Welcome back, ${data.user?.name || data.user?.email}` });
+      }
       return data.order.id as number;
     } catch (err: any) {
       toast({
