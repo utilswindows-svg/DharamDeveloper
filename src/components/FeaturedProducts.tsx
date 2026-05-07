@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Mail, FileText, HardDrive, Cpu, FileInput, MailOpen, FileOutput, ArrowRight } from "lucide-react";
 
-const products = [
+const allProducts = [
   {
     icon: Mail,
     title: "MBox to PDF",
@@ -10,6 +10,7 @@ const products = [
     href: "/products/mbox-to-pdf",
     color: "text-primary",
     borderColor: "border-primary/20",
+    active: true,
   },
   {
     icon: FileInput,
@@ -18,6 +19,7 @@ const products = [
     href: "/products/pst-migration",
     color: "text-accent",
     borderColor: "border-accent/20",
+    active: false,
   },
   {
     icon: MailOpen,
@@ -26,6 +28,7 @@ const products = [
     href: "/products/msg-migration",
     color: "text-success",
     borderColor: "border-success/20",
+    active: false,
   },
   {
     icon: FileOutput,
@@ -34,6 +37,7 @@ const products = [
     href: "/products/msg-to-pdf",
     color: "text-teal",
     borderColor: "border-teal/20",
+    active: false,
   },
   {
     icon: HardDrive,
@@ -42,14 +46,16 @@ const products = [
     href: "/products/data-recovery",
     color: "text-primary",
     borderColor: "border-primary/20",
+    active: false,
   },
   {
     icon: FileText,
-    title: "PDF Tools",
+    title: "PDF Unlocker",
     desc: "Unlock, merge, split, compress, and convert PDF files with our comprehensive toolkit.",
     href: "/products/pdf-tools",
     color: "text-accent",
     borderColor: "border-accent/20",
+    active: true,
   },
   {
     icon: Cpu,
@@ -58,8 +64,11 @@ const products = [
     href: "/products/pc-optimizer",
     color: "text-success",
     borderColor: "border-success/20",
+    active: false,
   },
 ];
+
+const products = allProducts.filter(p => p.active);
 
 const FeaturedProducts = () => {
   return (
