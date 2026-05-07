@@ -184,9 +184,10 @@ const HeroSection = () => {
                   </div>
                   <button
                     type="submit"
-                    className="w-full rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground transition-all hover:opacity-90 hover:shadow-md"
+                    disabled={loading}
+                    className="w-full rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground transition-all hover:opacity-90 hover:shadow-md disabled:opacity-60"
                   >
-                    Submit Feedback
+                    {loading ? "Submitting..." : "Submit Feedback"}
                   </button>
                 </form>
               )}
