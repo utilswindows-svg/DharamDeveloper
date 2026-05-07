@@ -3,6 +3,13 @@ import dashboardImg from "@/assets/screenshots/dashboard.jpg";
 import previewImg from "@/assets/screenshots/preview.jpg";
 import batchImg from "@/assets/screenshots/batch.jpg";
 import reportImg from "@/assets/screenshots/report.jpg";
+import mboxShot from "@/assets/screenshots/mbox-to-pdf.jpg";
+import pdfShot from "@/assets/screenshots/pdf-tools.jpg";
+import pstShot from "@/assets/screenshots/pst-migration.jpg";
+import msgMigShot from "@/assets/screenshots/msg-migration.jpg";
+import msgPdfShot from "@/assets/screenshots/msg-to-pdf.jpg";
+import recoveryShot from "@/assets/screenshots/data-recovery.jpg";
+import optimizerShot from "@/assets/screenshots/pc-optimizer.jpg";
 import mboxVideo from "@/assets/videos/mbox-to-pdf.mp4.asset.json";
 import pdfVideo from "@/assets/videos/pdf-tools.mp4.asset.json";
 import pstVideo from "@/assets/videos/pst-migration.mp4.asset.json";
@@ -76,6 +83,26 @@ const productVideos: Record<string, string> = {
   "msg-to-pdf": msgPdfVideo.url,
   "data-recovery": recoveryVideo.url,
   "pc-optimizer": optimizerVideo.url,
+};
+
+const productScreenshots: Record<string, string> = {
+  "mbox-to-pdf": mboxShot,
+  "pdf-tools": pdfShot,
+  "pst-migration": pstShot,
+  "msg-migration": msgMigShot,
+  "msg-to-pdf": msgPdfShot,
+  "data-recovery": recoveryShot,
+  "pc-optimizer": optimizerShot,
+};
+
+const buildScreenshots = (slug: string): ScreenshotData[] => {
+  const tool = productScreenshots[slug];
+  return [
+    { title: "Main Interface", caption: "The actual tool interface — purpose-built for the job.", accent: "from-primary/30 to-accent/20", image: tool ?? dashboardImg },
+    { title: "Smart Preview", caption: "Preview files before processing to avoid surprises.", accent: "from-accent/30 to-success/20", image: previewImg },
+    { title: "Batch Processing", caption: "Run hundreds of operations in a single workflow.", accent: "from-success/30 to-teal/20", image: batchImg },
+    { title: "Detailed Reports", caption: "Track progress with real-time logs and reports.", accent: "from-teal/30 to-primary/20", image: reportImg },
+  ];
 };
 
 export const products: Record<string, ProductData> = {
