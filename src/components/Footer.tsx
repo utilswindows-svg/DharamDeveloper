@@ -21,9 +21,12 @@ const Footer = () => (
         <div>
           <h4 className="mb-4 text-sm font-semibold uppercase tracking-wider text-hero-foreground">Products</h4>
           <ul className="space-y-2.5 text-sm">
-            {["MBox to PDF", "PST Migration", "MSG Migration", "MSG to PDF", "Data Recovery", "PDF Tools", "PC Optimizer"].map(p => (
-              <li key={p}>
-                <Link to={`/products/${p.toLowerCase().replace(/ /g, "-")}`} className="hover:text-hero-foreground transition-colors">{p}</Link>
+            {[
+              { name: "MBox to PDF", slug: "mbox-to-pdf" },
+              { name: "PDF Unlocker", slug: "pdf-tools" },
+            ].map(p => (
+              <li key={p.slug}>
+                <Link to={`/products/${p.slug}`} className="hover:text-hero-foreground transition-colors">{p.name}</Link>
               </li>
             ))}
           </ul>
