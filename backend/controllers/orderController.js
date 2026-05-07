@@ -1,10 +1,18 @@
 const { Order } = require('../models');
 const ApiError = require('../utils/ApiError');
 const paypal = require('../services/paypalService');
+const bcrypt = require('bcrypt');
+const crypto = require('crypto');
+const { User } = require('../models');
+const { issueTokens } = require('../services/tokenService');
 
 function genLicenseKey() {
   const seg = () => Math.random().toString(36).slice(2, 7).toUpperCase();
   return `${seg()}-${seg()}-${seg()}-${seg()}`;
+}
+
+function genTempPassword() {
+  return crypto.randomBytes(9).toString('base64').replace(/[^A-Za-z0-9]/g, '').slice(0, 12) + 'A1!';
 }
 
 function validateBilling(b) {
@@ -23,8 +31,32 @@ exports.createBillingOrder = async (req, res, next) => {
   try {
     const b = req.body || {};
     validateBilling(b);
+
+    // Auto-create / link user account from billing email
+    let user = req.user?.id ? await User.findByPk(req.user.id) : null;
+    let createdAccount = false;
+    let tempPassword = null;
+    if (!user) {
+      user = await User.findOne({ where: { email: b.email } });
+    }
+    if (!user) {
+      tempPassword = genTempPassword();
+      const hashed = await bcrypt.hash(tempPassword, 12);
+      user = await User.create({
+        name: `${b.firstName} ${b.lastName}`.trim(),
+        email: b.email,
+        phone: null,
+        password: hashed,
+        role: 'user',
+        provider: 'local',
+      });
+      createdAccount = true;
+    }
+
+    const tokens = await issueTokens(user);
+
     const order = await Order.create({
-      userId: req.user?.id || null,
+      userId: user.id,
       productSlug: b.productSlug,
       productTitle: b.productTitle,
       licenseName: b.licenseName,
@@ -42,7 +74,14 @@ exports.createBillingOrder = async (req, res, next) => {
       paymentMethod: 'paypal',
       paymentStatus: 'pending',
     });
-    res.status(201).json({ success: true, order });
+    res.status(201).json({
+      success: true,
+      order,
+      user: { id: user.id, name: user.name, email: user.email, role: user.role, avatar: user.avatar },
+      ...tokens,
+      createdAccount,
+      tempPassword: createdAccount ? tempPassword : undefined,
+    });
   } catch (err) { next(err); }
 };
 
