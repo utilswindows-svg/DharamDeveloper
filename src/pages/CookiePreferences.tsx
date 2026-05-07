@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import LegalPageLayout from "./legal/LegalPageLayout";
 import { toast } from "@/hooks/use-toast";
 import { Cookie, Shield, BarChart3, Megaphone } from "lucide-react";
+import SEO from "@/components/SEO";
 
 interface CookieCategory {
   id: string;
@@ -84,7 +85,9 @@ const CookiePreferences = () => {
   };
 
   return (
-    <LegalPageLayout
+    <>
+      <SEO title="Cookie Preferences" description="Manage your cookie preferences for WindowsUtils." path="/cookie-preferences" keywords="cookies, preferences, privacy" type="website" />
+      <LegalPageLayout
       title="Cookie Preferences"
       subtitle="Manage how WindowsUtils uses cookies to improve your experience."
       lastUpdated="January 1, 2026"
