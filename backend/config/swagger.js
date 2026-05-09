@@ -11,6 +11,7 @@ const swaggerSpec = {
   tags: [
     { name: 'Auth', description: 'Authentication and OTP endpoints' },
     { name: 'User', description: 'User profile endpoints' },
+    { name: 'Orders', description: 'Billing and PayPal order endpoints' },
   ],
   paths: {
     '/api/auth/signup': {
@@ -140,6 +141,116 @@ const swaggerSpec = {
         },
       },
     },
+    '/api/user/orders': {
+      get: {
+        tags: ['Orders'],
+        summary: 'List current user orders',
+        security: [{ bearerAuth: [] }],
+        responses: {
+          '200': { description: 'Orders returned' },
+          '401': { description: 'Unauthorized' },
+        },
+      },
+      post: {
+        tags: ['Orders'],
+        summary: 'Create a billing order (auto-creates account if guest)',
+        description: 'Public/guest-friendly. If no Bearer token, a user is auto-created from billing email and tokens are returned.',
+        security: [{ bearerAuth: [] }, {}],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/CreateOrderRequest' },
+            },
+          },
+        },
+        responses: {
+          '201': { description: 'Order created' },
+          '400': { description: 'Validation error' },
+        },
+      },
+    },
+    '/api/user/orders/{id}': {
+      get: {
+        tags: ['Orders'],
+        summary: 'Get an order by ID',
+        security: [{ bearerAuth: [] }, {}],
+        parameters: [
+          { name: 'id', in: 'path', required: true, schema: { type: 'string' } },
+        ],
+        responses: {
+          '200': { description: 'Order returned' },
+          '404': { description: 'Order not found' },
+        },
+      },
+    },
+    '/api/user/orders/{id}/paypal/create': {
+      post: {
+        tags: ['Orders'],
+        summary: 'Create a PayPal order for an existing billing order',
+        security: [{ bearerAuth: [] }, {}],
+        parameters: [
+          { name: 'id', in: 'path', required: true, schema: { type: 'string' } },
+        ],
+        responses: {
+          '200': { description: 'PayPal order created' },
+          '404': { description: 'Order not found' },
+        },
+      },
+    },
+    '/api/user/orders/{id}/paypal/capture': {
+      post: {
+        tags: ['Orders'],
+        summary: 'Capture a PayPal order after buyer approval',
+        security: [{ bearerAuth: [] }, {}],
+        parameters: [
+          { name: 'id', in: 'path', required: true, schema: { type: 'string' } },
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['paypalOrderId'],
+                properties: { paypalOrderId: { type: 'string', example: '5O190127TN364715T' } },
+              },
+            },
+          },
+        },
+        responses: {
+          '200': { description: 'Payment captured' },
+          '400': { description: 'Payment not completed' },
+          '404': { description: 'Order not found' },
+        },
+      },
+    },
+    '/api/feedback': {
+      post: {
+        tags: ['User'],
+        summary: 'Submit feedback',
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['name', 'email', 'message'],
+                properties: {
+                  name: { type: 'string', example: 'Jane Doe' },
+                  email: { type: 'string', format: 'email', example: 'jane@example.com' },
+                  message: { type: 'string', example: 'Great product!' },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          '201': { description: 'Feedback submitted' },
+          '400': { description: 'Validation error' },
+        },
+      },
+    },
   },
   components: {
     securitySchemes: {
@@ -201,6 +312,26 @@ const swaggerSpec = {
           phone: { type: 'string', example: '+14155552671' },
           newPassword: { type: 'string', format: 'password', example: 'NewStrongPass123' },
           channel: { type: 'string', enum: ['email', 'sms'], example: 'email' },
+        },
+      },
+      CreateOrderRequest: {
+        type: 'object',
+        required: ['firstName', 'lastName', 'email', 'country', 'zip', 'productSlug', 'productTitle', 'licenseName', 'subtotal', 'total'],
+        properties: {
+          firstName: { type: 'string', example: 'Jane' },
+          lastName: { type: 'string', example: 'Doe' },
+          email: { type: 'string', format: 'email', example: 'jane@example.com' },
+          company: { type: 'string', example: 'Acme Inc.' },
+          country: { type: 'string', example: 'US' },
+          zip: { type: 'string', example: '10001' },
+          productSlug: { type: 'string', example: 'mbox-to-pdf' },
+          productTitle: { type: 'string', example: 'MBOX to PDF Converter' },
+          licenseName: { type: 'string', example: 'Personal' },
+          licenseIndex: { type: 'integer', example: 0 },
+          subtotal: { type: 'number', example: 49 },
+          tax: { type: 'number', example: 0 },
+          total: { type: 'number', example: 49 },
+          currency: { type: 'string', example: 'USD' },
         },
       },
     },
