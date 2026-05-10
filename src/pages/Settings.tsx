@@ -221,20 +221,31 @@ const Settings = () => {
 
               {/* Two-Factor Authentication */}
               <div className="mb-6 p-4 border border-border rounded-lg">
-                <div className="flex items-center justify-between mb-2">
-                  <div>
-                    <p className="font-medium">Two-Factor Authentication</p>
-                    <p className="text-sm text-muted-foreground">Add an extra layer of security to your account</p>
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className="font-medium">Two-Factor Authentication</p>
+                      <span className={`text-xs px-2 py-0.5 rounded-full ${settings.twoFactor ? 'bg-green-100 text-green-700' : 'bg-muted text-muted-foreground'}`}>
+                        {settings.twoFactor ? 'Enabled' : 'Disabled'}
+                      </span>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      We'll email a verification code to confirm this change.
+                    </p>
                   </div>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={settings.twoFactor}
-                      onChange={() => handleSettingChange('twoFactor')}
-                      disabled={loadingSettings}
-                      className="w-5 h-5 rounded accent-accent"
-                    />
-                  </label>
+                  <button
+                    type="button"
+                    onClick={() => requestTwoFaOtp(settings.twoFactor ? 'disable' : 'enable')}
+                    disabled={loadingSettings || twoFaSending}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all ${
+                      settings.twoFactor
+                        ? 'bg-destructive/10 text-destructive hover:bg-destructive/20'
+                        : 'bg-accent text-white hover:opacity-90'
+                    } disabled:opacity-50`}
+                  >
+                    {twoFaSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />}
+                    {settings.twoFactor ? 'Disable' : 'Enable'}
+                  </button>
                 </div>
               </div>
 
