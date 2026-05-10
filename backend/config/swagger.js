@@ -457,6 +457,20 @@ const swaggerSpec = {
         },
       },
     },
+    '/api/auth/logout': {
+      post: {
+        tags: ['Auth'],
+        summary: 'Logout — revoke all refresh tokens for the current user',
+        security: [{ bearerAuth: [] }],
+        responses: {
+          '200': {
+            description: 'Logged out',
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/Success' } } },
+          },
+          '401': { $ref: '#/components/responses/Unauthorized' },
+        },
+      },
+    },
 
     // ---------------- USER ----------------
     '/api/user/profile': {

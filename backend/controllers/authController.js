@@ -55,6 +55,19 @@ exports.refresh = async (req, res, next) => {
 };
 
 /**
+ * POST /auth/logout
+ * Auth required. Revokes all refresh tokens for the current user so any
+ * issued refresh token can no longer be rotated into a new access token.
+ */
+exports.logout = async (req, res, next) => {
+  try {
+    const userId = req.user?.id || req.user?.sub;
+    if (userId) await revokeAll(userId);
+    res.json({ success: true, message: 'Logged out' });
+  } catch (e) { next(e); }
+};
+
+/**
  * POST /auth/forgot-password
  * Body: { email } OR { phone }  + optional { channel: 'email'|'sms' }
  *

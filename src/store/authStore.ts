@@ -151,6 +151,20 @@ export const socialLogin = createAsyncThunk(
   }
 );
 
+// Calls backend to revoke refresh tokens, then clears local auth state.
+export const logoutUser = createAsyncThunk(
+  'auth/logoutUser',
+  async (_: void, { dispatch }) => {
+    try {
+      await api.post('/auth/logout');
+    } catch {
+      // Ignore network/auth errors — we still want to clear local state.
+    }
+    dispatch(logout());
+    return true;
+  }
+);
+
 // ============================================================
 // Slice
 // ============================================================
