@@ -14,6 +14,12 @@ const Product = sequelize.define('Product', {
   featured:     { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
   active:       { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
   sortOrder:    { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
+  features:     { type: DataTypes.JSON, allowNull: true }, // [{ title, desc }]
+  steps:        { type: DataTypes.JSON, allowNull: true }, // [{ step, title, desc }]
+  faqs:         { type: DataTypes.JSON, allowNull: true }, // [{ q, a }]
+  systemReqs:   { type: DataTypes.JSON, allowNull: true }, // string[]
+  formats:      { type: DataTypes.JSON, allowNull: true }, // string[]
+  licenses:     { type: DataTypes.JSON, allowNull: true }, // [{ name, price, originalPrice?, machines, desc }]
 }, { tableName: 'products', timestamps: true });
 
 module.exports = Product;
