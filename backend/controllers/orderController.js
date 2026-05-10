@@ -5,6 +5,7 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const { User } = require('../models');
 const { issueTokens } = require('../services/tokenService');
+const { sendLicenseEmail } = require('../services/emailService');
 
 function genLicenseKey() {
   const seg = () => Math.random().toString(36).slice(2, 7).toUpperCase();
@@ -73,6 +74,7 @@ exports.createBillingOrder = async (req, res, next) => {
       currency: b.currency || 'USD',
       paymentMethod: 'paypal',
       paymentStatus: 'pending',
+      seats: Number(b.seats) > 0 ? Number(b.seats) : 1,
     });
     res.status(201).json({
       success: true,
@@ -116,7 +118,18 @@ exports.capturePaypalOrder = async (req, res, next) => {
       order.paypalCaptureId = capture?.id || null;
       order.payerEmail = result?.payer?.email_address || null;
       if (!order.licenseKey) order.licenseKey = genLicenseKey();
+      if (!order.expiresAt) {
+        const exp = new Date();
+        exp.setFullYear(exp.getFullYear() + 1);
+        order.expiresAt = exp;
+      }
       await order.save();
+      // Send license key email (non-blocking on errors)
+      try {
+        await sendLicenseEmail({ to: order.email, order: order.toJSON() });
+      } catch (mailErr) {
+        console.error('License email failed:', mailErr.message);
+      }
       return res.json({ success: true, order, paypal: result });
     }
     order.paymentStatus = 'failed';

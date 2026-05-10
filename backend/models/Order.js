@@ -27,6 +27,8 @@ const Order = sequelize.define('Order', {
   paypalCaptureId:{ type: DataTypes.STRING(100), allowNull: true },
   payerEmail:     { type: DataTypes.STRING(255), allowNull: true },
   licenseKey:     { type: DataTypes.STRING(100), allowNull: true },
+  seats:          { type: DataTypes.INTEGER, allowNull: false, defaultValue: 1 },
+  expiresAt:      { type: DataTypes.DATE, allowNull: true },
 }, { tableName: 'orders', timestamps: true });
 
 module.exports = Order;
