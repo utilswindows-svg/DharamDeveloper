@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const auth = require('../middleware/auth');
+const { requireRole } = require('../middleware/auth');
 const optionalAuth = require('../middleware/optionalAuth');
 const { profile, updateProfile, getSettings, updateSettings, changePassword, request2FAOtp, verify2FA } = require('../controllers/userController');
 const {
@@ -9,7 +10,7 @@ const {
   getOrder,
   listMyOrders,
 } = require('../controllers/orderController');
-const { listDownloads, listHistory, recordDownload } = require('../controllers/downloadController');
+const { listDownloads, listHistory, recordDownload, adminListDownloads } = require('../controllers/downloadController');
 
 router.get('/profile', auth, profile);
 router.put('/profile', auth, updateProfile);
@@ -34,5 +35,8 @@ router.post('/orders/:id/paypal/capture', optionalAuth, capturePaypalOrder);
 router.get('/downloads', auth, listDownloads);
 router.get('/downloads/history', auth, listHistory);
 router.post('/downloads/:orderId/record', auth, recordDownload);
+
+// Admin: full download log across all users
+router.get('/admin/downloads', auth, requireRole('admin'), adminListDownloads);
 
 module.exports = router;
