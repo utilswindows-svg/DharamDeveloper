@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CreditCard, Download, Calendar, X, Plus, Check, Trash2 } from 'lucide-react';
+import { CreditCard, Download, Calendar, X, Plus, Check, Trash2, ShieldCheck } from 'lucide-react';
 import jsPDF from 'jspdf';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -19,82 +19,6 @@ const Billing = () => {
   ]);
 
   const [showAddPaymentForm, setShowAddPaymentForm] = useState(false);
-  const [formData, setFormData] = useState({
-    cardholderName: '',
-    cardNumber: '',
-    expiryMonth: '',
-    expiryYear: '',
-    cvv: '',
-  });
-  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
-
-  const validateForm = () => {
-    const errors: Record<string, string> = {};
-
-    if (!formData.cardholderName.trim()) {
-      errors.cardholderName = 'Cardholder name is required';
-    }
-
-    if (!formData.cardNumber || formData.cardNumber.replace(/\s/g, '').length !== 16) {
-      errors.cardNumber = 'Valid 16-digit card number is required';
-    }
-
-    if (!formData.expiryMonth || !formData.expiryYear) {
-      errors.expiry = 'Expiry date is required';
-    }
-
-    if (!formData.cvv || formData.cvv.length < 3 || formData.cvv.length > 4) {
-      errors.cvv = 'Valid CVV is required';
-    }
-
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
-  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    if (formErrors[name]) {
-      setFormErrors(prev => ({ ...prev, [name]: '' }));
-    }
-  };
-
-  const formatCardNumber = (value: string) => {
-    return value.replace(/\s/g, '').replace(/(\d{4})/g, '$1 ').trim();
-  };
-
-  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatCardNumber(e.target.value);
-    if (formatted.replace(/\s/g, '').length <= 16) {
-      setFormData(prev => ({ ...prev, cardNumber: formatted }));
-    }
-  };
-
-  const handleAddPaymentMethod = () => {
-    if (!validateForm()) return;
-
-    const last4 = formData.cardNumber.slice(-4);
-    const expiry = `${formData.expiryMonth}/${formData.expiryYear}`;
-
-    const newMethod = {
-      id: Math.max(...paymentMethods.map(m => m.id), 0) + 1,
-      type: 'Credit Card',
-      name: 'Card',
-      last4,
-      expiry,
-      isDefault: paymentMethods.length === 0,
-    };
-
-    setPaymentMethods(prev => [...prev, newMethod]);
-    setShowAddPaymentForm(false);
-    setFormData({
-      cardholderName: '',
-      cardNumber: '',
-      expiryMonth: '',
-      expiryYear: '',
-      cvv: '',
-    });
-  };
 
   const handleSetDefault = (id: number) => {
     setPaymentMethods(prev =>
