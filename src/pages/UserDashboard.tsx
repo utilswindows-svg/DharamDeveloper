@@ -1,20 +1,54 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { User, Settings, CreditCard, Download, LogOut, Shield, Key, CheckCircle, Clock, ArrowRight } from 'lucide-react';
+import { User, Settings, CreditCard, Download, Shield, Key, CheckCircle, XCircle, ArrowRight, Loader2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import SEO from "@/components/SEO";
+import { api, useAppSelector } from '@/store/authStore';
+import { useToast } from '@/hooks/use-toast';
 
 const UserDashboard = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const user = useAppSelector((s) => s.auth.user);
 
-  const handleLogout = () => {
-    // Simulate logout
-    console.log('User logged out');
-    localStorage.removeItem('isLoggedIn');
-    navigate('/login');
-  };
+  const [stats, setStats] = useState({ total: 0, active: 0, expired: 0 });
+  const [recent, setRecent] = useState<Array<{ id: number; productTitle: string; licenseKey: string; status: 'active' | 'expired'; expiresAt?: string | null }>>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const { data } = await api.get('/user/orders');
+        if (!mounted) return;
+        const orders = (data?.orders || []) as any[];
+        const paid = orders.filter((o) => o.paymentStatus === 'paid' && o.licenseKey);
+        const now = Date.now();
+        let active = 0, expired = 0;
+        const mapped = paid.map((o) => {
+          const exp = o.expiresAt ? new Date(o.expiresAt).getTime() : null;
+          const isExpired = exp !== null && exp < now;
+          if (isExpired) expired++; else active++;
+          return {
+            id: o.id,
+            productTitle: o.productTitle as string,
+            licenseKey: o.licenseKey as string,
+            status: (isExpired ? 'expired' : 'active') as 'active' | 'expired',
+            expiresAt: o.expiresAt,
+          };
+        });
+        setStats({ total: paid.length, active, expired });
+        setRecent(mapped.slice(0, 3));
+      } catch (err: any) {
+        toast({ title: 'Failed to load licenses', description: err?.response?.data?.message || err.message, variant: 'destructive' });
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+    return () => { mounted = false; };
+  }, [toast]);
 
   const menuItems = [
     {
@@ -72,7 +106,7 @@ const UserDashboard = () => {
             <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-6">
               <User className="h-10 w-10" />
             </div>
-            <h1 className="text-4xl font-bold mb-4">Welcome back!</h1>
+            <h1 className="text-4xl font-bold mb-4">Welcome back{user?.name ? `, ${user.name.split(' ')[0]}` : ''}!</h1>
             <p className="text-xl text-hero-muted max-w-2xl mx-auto">
               Manage your account, access your downloads, and get support all in one place.
             </p>
@@ -134,21 +168,49 @@ const UserDashboard = () => {
                 <div className="flex items-center gap-2 text-muted-foreground text-sm mb-1">
                   <Key className="h-4 w-4" /> Total
                 </div>
-                <p className="text-2xl font-bold">5</p>
+                <p className="text-2xl font-bold">
+                  {loading ? <Loader2 className="h-5 w-5 animate-spin inline" /> : stats.total}
+                </p>
               </div>
               <div className="border border-border rounded-lg p-4">
                 <div className="flex items-center gap-2 text-green-600 text-sm mb-1">
                   <CheckCircle className="h-4 w-4" /> Active
                 </div>
-                <p className="text-2xl font-bold">3</p>
+                <p className="text-2xl font-bold">
+                  {loading ? <Loader2 className="h-5 w-5 animate-spin inline" /> : stats.active}
+                </p>
               </div>
               <div className="border border-border rounded-lg p-4">
-                <div className="flex items-center gap-2 text-amber-600 text-sm mb-1">
-                  <Clock className="h-4 w-4" /> Trial
+                <div className="flex items-center gap-2 text-red-600 text-sm mb-1">
+                  <XCircle className="h-4 w-4" /> Expired
                 </div>
-                <p className="text-2xl font-bold">1</p>
+                <p className="text-2xl font-bold">
+                  {loading ? <Loader2 className="h-5 w-5 animate-spin inline" /> : stats.expired}
+                </p>
               </div>
             </div>
+
+            {/* Recent licenses preview */}
+            {!loading && recent.length > 0 && (
+              <div className="space-y-2 mb-6">
+                {recent.map((lic) => (
+                  <div key={lic.id} className="flex items-center justify-between gap-3 p-3 border border-border rounded-lg">
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium truncate">{lic.productTitle}</p>
+                      <p className="text-xs text-muted-foreground font-mono truncate">{lic.licenseKey}</p>
+                    </div>
+                    <span className={`text-xs px-2 py-1 rounded-full whitespace-nowrap ${lic.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                      {lic.status === 'active' ? 'Active' : 'Expired'}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+            {!loading && recent.length === 0 && (
+              <div className="text-center py-6 text-muted-foreground text-sm border border-dashed border-border rounded-lg mb-6">
+                No licenses yet. Browse products to get started.
+              </div>
+            )}
 
             <Link
               to="/licenses"
