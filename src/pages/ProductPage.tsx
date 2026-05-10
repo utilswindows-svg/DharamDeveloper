@@ -120,6 +120,7 @@ const ProductPage = () => {
       }
     : undefined;
 
+  const apiBaseEarly = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000/api';
   const productSchema: Record<string, any> = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
@@ -127,6 +128,8 @@ const ProductPage = () => {
     description: product.description,
     applicationCategory: "UtilitiesApplication",
     operatingSystem: "Windows",
+    image: `${apiBaseEarly}/catalog/products/${product.slug}/og.svg`,
+    url: `https://windowsutils.lovable.app/products/${product.slug}`,
     ...(minPrice !== undefined && {
       offers: {
         "@type": "Offer",
