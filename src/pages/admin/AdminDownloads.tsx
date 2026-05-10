@@ -300,6 +300,8 @@ const AdminDownloads = () => {
               </Table>
             </div>
           </motion.div>
+          </>
+          )}
     </AdminLayout>
   );
 };
