@@ -1007,6 +1007,37 @@ const swaggerSpec = {
 
     // ---------------- HEALTH ----------------
     '/health': {
+    },
+    '/api/user/admin/licenses': {
+      get: {
+        tags: ['User'],
+        summary: 'Admin: list all licenses (derived from paid orders)',
+        security: [{ bearerAuth: [] }],
+        responses: {
+          '200': {
+            description: 'License list',
+            content: { 'application/json': { schema: { type: 'object', properties: { success: { type: 'boolean' }, licenses: { type: 'array', items: { type: 'object' } } } } } },
+          },
+          '401': { $ref: '#/components/responses/Unauthorized' },
+          '403': { description: 'Admin role required' },
+        },
+      },
+    },
+    '/api/user/admin/licenses/{id}/revoke': {
+      post: {
+        tags: ['User'],
+        summary: 'Admin: revoke a license (marks order refunded, expires now)',
+        security: [{ bearerAuth: [] }],
+        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'integer' } }],
+        responses: {
+          '200': { description: 'License revoked', content: { 'application/json': { schema: { $ref: '#/components/schemas/Success' } } } },
+          '401': { $ref: '#/components/responses/Unauthorized' },
+          '403': { description: 'Admin role required' },
+          '404': { description: 'Not found' },
+        },
+      },
+    },
+    '/health-noop': {
       get: {
         tags: ['Auth'],
         summary: 'Health check',
