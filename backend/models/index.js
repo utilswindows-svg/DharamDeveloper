@@ -3,4 +3,11 @@ const User = require('./User');
 const Order = require('./Order');
 const Feedback = require('./Feedback');
 const Download = require('./Download');
-module.exports = { sequelize, User, Order, Feedback, Download };
+const Category = require('./Category');
+const Product = require('./Product');
+
+// Associations
+Category.hasMany(Product, { foreignKey: 'categoryId', as: 'products' });
+Product.belongsTo(Category, { foreignKey: 'categoryId', as: 'category' });
+
+module.exports = { sequelize, User, Order, Feedback, Download, Category, Product };
