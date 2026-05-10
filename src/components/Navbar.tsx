@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 import { Mail, FileText, HardDrive, Zap, ArrowRight } from "lucide-react";
 import logo from "../assets/logo.png";
+import { logout, useAppDispatch, useAppSelector } from "../store/authStore";
 
 const productCategories = [ 
   {
@@ -40,21 +41,16 @@ const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [productsOpen, setProductsOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    // Check if user is logged in (simulated with localStorage)
-    const loggedIn = localStorage.getItem('isLoggedIn') === 'true';
-    setIsLoggedIn(loggedIn);
-  }, []);
+  const dispatch = useAppDispatch();
+  const { user, accessToken } = useAppSelector((s) => s.auth);
+  const isLoggedIn = !!accessToken && !!user;
 
   const handleLogout = () => {
-    localStorage.removeItem('isLoggedIn');
-    setIsLoggedIn(false);
+    dispatch(logout());
     setUserMenuOpen(false);
-    navigate('/login');
+    navigate('/login', { replace: true });
   };
 
   return (
