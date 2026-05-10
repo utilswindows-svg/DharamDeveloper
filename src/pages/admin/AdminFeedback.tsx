@@ -1,167 +1,291 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { Star, MessageSquare, Plus, Pencil, Trash2 } from "lucide-react";
+import { MessageSquare, Pencil, Trash2, Search, Loader2, Mail } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
+import { api } from "@/store/authStore";
+
+type Status = "new" | "read" | "archived";
 
 interface Feedback {
   id: number;
-  user: string;
+  userId: number | null;
+  name: string;
   email: string;
-  product: string;
-  rating: number;
   message: string;
-  date: string;
+  status: Status;
+  createdAt: string;
+  updatedAt: string;
 }
 
-const initial: Feedback[] = [
-  { id: 1, user: "Rohit Sharma", email: "rohit@example.com", product: "Windows Cleaner Pro", rating: 5, message: "Excellent product! Cleaned up 12GB of junk files. Highly recommended.", date: "2026-04-22" },
-  { id: 2, user: "Anita Verma", email: "anita.v@example.com", product: "Password Manager", rating: 4, message: "Works great, but I'd love a browser extension for Firefox.", date: "2026-04-21" },
-  { id: 3, user: "Karan Mehta", email: "karan.m@example.com", product: "System Optimizer", rating: 5, message: "Boot time improved by 40%. Worth every rupee.", date: "2026-04-20" },
-  { id: 4, user: "Sneha Iyer", email: "sneha.i@example.com", product: "Data Recovery", rating: 3, message: "Recovered most files but not the ones I needed most. Mixed feelings.", date: "2026-04-18" },
-];
+const fmtDate = (d: string) =>
+  new Date(d).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
 
-const Stars = ({ n, onChange }: { n: number; onChange?: (v: number) => void }) => (
-  <div className="flex items-center gap-0.5">
-    {[1, 2, 3, 4, 5].map((i) => (
-      <button
-        key={i}
-        type="button"
-        onClick={() => onChange?.(i)}
-        disabled={!onChange}
-        className={onChange ? "cursor-pointer" : "cursor-default"}
-      >
-        <Star className={`h-4 w-4 ${i <= n ? "text-accent fill-accent" : "text-muted-foreground/30"}`} />
-      </button>
-    ))}
-  </div>
-);
-
-const emptyForm = { user: "", email: "", product: "", rating: 5, message: "" };
+const statusBadge = (s: Status) => {
+  const map: Record<Status, string> = {
+    new: "bg-accent/10 text-accent",
+    read: "bg-success/10 text-success",
+    archived: "bg-muted text-muted-foreground",
+  };
+  return <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${map[s]}`}>{s}</span>;
+};
 
 export default function AdminFeedback() {
-  const [feedbacks, setFeedbacks] = useState<Feedback[]>(initial);
+  const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"all" | Status>("all");
+
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Feedback | null>(null);
-  const [form, setForm] = useState(emptyForm);
+  const [form, setForm] = useState({ name: "", email: "", message: "", status: "new" as Status });
+  const [saving, setSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
-  const openAdd = () => {
-    setEditing(null);
-    setForm(emptyForm);
-    setOpen(true);
+  const load = async () => {
+    setLoading(true);
+    try {
+      const { data } = await api.get("/feedback");
+      setFeedbacks(data?.feedback || []);
+    } catch (err: any) {
+      toast({
+        title: "Failed to load feedback",
+        description: err?.response?.data?.message || err?.message || "Please try again",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { load(); }, []);
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return feedbacks.filter((f) => {
+      if (statusFilter !== "all" && f.status !== statusFilter) return false;
+      if (!q) return true;
+      return [f.name, f.email, f.message].some((v) => v?.toLowerCase().includes(q));
+    });
+  }, [feedbacks, search, statusFilter]);
+
+  const stats = {
+    total: feedbacks.length,
+    new: feedbacks.filter((f) => f.status === "new").length,
+    read: feedbacks.filter((f) => f.status === "read").length,
+    archived: feedbacks.filter((f) => f.status === "archived").length,
   };
 
   const openEdit = (f: Feedback) => {
     setEditing(f);
-    setForm({ user: f.user, email: f.email, product: f.product, rating: f.rating, message: f.message });
+    setForm({ name: f.name, email: f.email, message: f.message, status: f.status });
     setOpen(true);
   };
 
-  const handleSave = () => {
-    if (!form.user.trim() || !form.email.trim() || !form.product.trim() || !form.message.trim()) {
+  const handleSave = async () => {
+    if (!editing) return;
+    if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
       toast({ title: "Missing fields", description: "Please fill all fields.", variant: "destructive" });
       return;
     }
-    if (editing) {
-      setFeedbacks((prev) => prev.map((f) => (f.id === editing.id ? { ...f, ...form } : f)));
+    setSaving(true);
+    try {
+      await api.patch(`/feedback/${editing.id}`, form);
       toast({ title: "Feedback updated" });
-    } else {
-      const newF: Feedback = {
-        id: Math.max(0, ...feedbacks.map((f) => f.id)) + 1,
-        ...form,
-        date: new Date().toISOString().slice(0, 10),
-      };
-      setFeedbacks((prev) => [newF, ...prev]);
-      toast({ title: "Feedback added" });
+      setOpen(false);
+      await load();
+    } catch (err: any) {
+      toast({
+        title: "Update failed",
+        description: err?.response?.data?.message || err?.message || "Please try again",
+        variant: "destructive",
+      });
+    } finally {
+      setSaving(false);
     }
-    setOpen(false);
   };
 
-  const handleDelete = (id: number) => {
-    setFeedbacks((prev) => prev.filter((f) => f.id !== id));
-    toast({ title: "Feedback deleted" });
+  const handleStatusChange = async (f: Feedback, status: Status) => {
+    try {
+      await api.patch(`/feedback/${f.id}`, { status });
+      setFeedbacks((prev) => prev.map((x) => (x.id === f.id ? { ...x, status } : x)));
+    } catch (err: any) {
+      toast({
+        title: "Update failed",
+        description: err?.response?.data?.message || err?.message || "Please try again",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    if (!confirm("Delete this feedback? This cannot be undone.")) return;
+    setDeletingId(id);
+    try {
+      await api.delete(`/feedback/${id}`);
+      setFeedbacks((prev) => prev.filter((f) => f.id !== id));
+      toast({ title: "Feedback deleted" });
+    } catch (err: any) {
+      toast({
+        title: "Delete failed",
+        description: err?.response?.data?.message || err?.message || "Please try again",
+        variant: "destructive",
+      });
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   return (
-    <AdminLayout title="Feedback" description="User reviews and product feedback">
-      <div className="flex justify-end mb-4">
-        <Button onClick={openAdd}>
-          <Plus className="h-4 w-4" /> Add Feedback
-        </Button>
-      </div>
-
-      <div className="grid md:grid-cols-2 gap-4">
-        {feedbacks.map((f, i) => (
-          <motion.div
-            key={f.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: i * 0.05 }}
-            className="bg-card border border-border rounded-xl p-5 shadow-sm"
-          >
-            <div className="flex items-start justify-between gap-3 mb-3">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold">
-                  {f.user.charAt(0)}
-                </div>
-                <div>
-                  <p className="font-semibold text-sm">{f.user}</p>
-                  <p className="text-xs text-muted-foreground">{f.email}</p>
-                </div>
-              </div>
-              <Stars n={f.rating} />
-            </div>
-            <p className="text-xs text-muted-foreground mb-2">
-              <span className="font-semibold text-foreground">{f.product}</span> · {f.date}
-            </p>
-            <p className="text-sm text-foreground flex gap-2">
-              <MessageSquare className="h-4 w-4 text-accent shrink-0 mt-0.5" />
-              {f.message}
-            </p>
-            <div className="flex justify-end gap-2 mt-4 pt-3 border-t border-border">
-              <Button size="sm" variant="outline" onClick={() => openEdit(f)}>
-                <Pencil className="h-3.5 w-3.5" /> Edit
-              </Button>
-              <Button size="sm" variant="destructive" onClick={() => handleDelete(f.id)}>
-                <Trash2 className="h-3.5 w-3.5" /> Delete
-              </Button>
-            </div>
-          </motion.div>
+    <AdminLayout title="Feedback" description="All user feedback submitted across the platform">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        {[
+          { label: "Total", value: stats.total, color: "primary" },
+          { label: "New", value: stats.new, color: "accent" },
+          { label: "Read", value: stats.read, color: "success" },
+          { label: "Archived", value: stats.archived, color: "muted-foreground" },
+        ].map((s) => (
+          <div key={s.label} className="bg-card border border-border rounded-xl p-5 shadow-sm">
+            <p className="text-sm text-muted-foreground mb-1">{s.label}</p>
+            <p className={`text-2xl font-bold text-${s.color}`}>{s.value}</p>
+          </div>
         ))}
       </div>
+
+      <div className="bg-card border border-border rounded-xl p-5 shadow-sm mb-6">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="relative flex-1 min-w-[240px]">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search name, email, message..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+          <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as any)}>
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="new">New</SelectItem>
+              <SelectItem value="read">Read</SelectItem>
+              <SelectItem value="archived">Archived</SelectItem>
+            </SelectContent>
+          </Select>
+          <p className="text-sm text-muted-foreground ml-auto">
+            Showing {filtered.length} of {feedbacks.length}
+          </p>
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="flex items-center justify-center py-10 text-muted-foreground">
+          <Loader2 className="h-5 w-5 animate-spin mr-2" /> Loading feedback...
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="bg-card border border-border rounded-xl p-10 text-center text-muted-foreground">
+          No feedback found.
+        </div>
+      ) : (
+        <div className="grid md:grid-cols-2 gap-4">
+          {filtered.map((f, i) => (
+            <motion.div
+              key={f.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: Math.min(i * 0.03, 0.3) }}
+              className="bg-card border border-border rounded-xl p-5 shadow-sm flex flex-col"
+            >
+              <div className="flex items-start justify-between gap-3 mb-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold">
+                    {f.name.charAt(0).toUpperCase()}
+                  </div>
+                  <div>
+                    <p className="font-semibold text-sm">{f.name}</p>
+                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                      <Mail className="h-3 w-3" /> {f.email}
+                    </p>
+                  </div>
+                </div>
+                {statusBadge(f.status)}
+              </div>
+              <p className="text-xs text-muted-foreground mb-2">
+                Submitted {fmtDate(f.createdAt)}
+              </p>
+              <p className="text-sm text-foreground flex gap-2 flex-1">
+                <MessageSquare className="h-4 w-4 text-accent shrink-0 mt-0.5" />
+                {f.message}
+              </p>
+              <div className="flex items-center justify-between gap-2 mt-4 pt-3 border-t border-border">
+                <Select value={f.status} onValueChange={(v) => handleStatusChange(f, v as Status)}>
+                  <SelectTrigger className="w-32 h-8 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="new">New</SelectItem>
+                    <SelectItem value="read">Read</SelectItem>
+                    <SelectItem value="archived">Archived</SelectItem>
+                  </SelectContent>
+                </Select>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline" onClick={() => openEdit(f)}>
+                    <Pencil className="h-3.5 w-3.5" /> Edit
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    disabled={deletingId === f.id}
+                    onClick={() => handleDelete(f.id)}
+                  >
+                    {deletingId === f.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
+                    Delete
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{editing ? "Edit Feedback" : "Add Feedback"}</DialogTitle>
+            <DialogTitle>Edit Feedback</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="user">User Name</Label>
-              <Input id="user" value={form.user} onChange={(e) => setForm({ ...form, user: e.target.value })} />
+              <Label htmlFor="name">Name</Label>
+              <Input id="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input id="email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="product">Product</Label>
-              <Input id="product" value={form.product} onChange={(e) => setForm({ ...form, product: e.target.value })} />
-            </div>
-            <div className="grid gap-2">
-              <Label>Rating</Label>
-              <Stars n={form.rating} onChange={(v) => setForm({ ...form, rating: v })} />
+              <Label htmlFor="status">Status</Label>
+              <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v as Status })}>
+                <SelectTrigger id="status">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="new">New</SelectItem>
+                  <SelectItem value="read">Read</SelectItem>
+                  <SelectItem value="archived">Archived</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div className="grid gap-2">
               <Label htmlFor="message">Message</Label>
@@ -169,8 +293,10 @@ export default function AdminFeedback() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-            <Button onClick={handleSave}>{editing ? "Save Changes" : "Add Feedback"}</Button>
+            <Button variant="outline" onClick={() => setOpen(false)} disabled={saving}>Cancel</Button>
+            <Button onClick={handleSave} disabled={saving}>
+              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save Changes"}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
