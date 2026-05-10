@@ -9,8 +9,8 @@ let cachedExpiry = 0;
 
 async function getAccessToken() {
   if (cachedToken && Date.now() < cachedExpiry - 60_000) return cachedToken;
-  const id = process.env.PAYPAL_CLIENT_ID;
-  const secret = process.env.PAYPAL_CLIENT_SECRET;
+  const id = process.env.PAYPAL_CLIENT_ID || process.env.VITE_PAYPAL_CLIENT_ID;
+  const secret = process.env.PAYPAL_CLIENT_SECRET || process.env.VITE_PAYPAL_SECRET;
   if (!id || !secret) throw new Error('PayPal credentials not configured');
   const { data } = await axios.post(
     `${PAYPAL_BASE}/v1/oauth2/token`,
