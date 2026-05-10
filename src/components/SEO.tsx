@@ -11,7 +11,7 @@ export interface SEOProps {
   noIndex?: boolean;
 }
 
-const SITE_URL = "https://windowsutils.lovable.app";
+const SITE_URL = "https://windowsutils.com";
 const SITE_NAME = "WindowsUtils";
 const TWITTER_HANDLE = "@windowsutils";
 const DEFAULT_IMAGE = `${SITE_URL}/og-image.jpg`;
