@@ -154,7 +154,6 @@ const ProductPage = () => {
     : null;
 
   // Dynamic SEO derived from API response
-  const apiBase = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000/api';
   const featureKeywords = (product.features || []).slice(0, 4).map((f) => f.title).join(', ');
   const formatKeywords = (product.formats || []).join(', ');
   const categoryLabel = (apiProduct as any)?.category?.label;
@@ -181,7 +180,7 @@ const ProductPage = () => {
   ]
     .filter(Boolean)
     .join(', ');
-  const ogImage = `${apiBase}/catalog/products/${product.slug}/og.svg`;
+  const ogImage = `${apiBaseEarly}/catalog/products/${product.slug}/og.svg`;
 
   return (
     <div className="min-h-screen">
