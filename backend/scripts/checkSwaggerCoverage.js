@@ -48,7 +48,9 @@ function joinPath(prefix, suffix) {
   const a = prefix.replace(/\/+$/, '');
   const b = suffix.startsWith('/') ? suffix : `/${suffix}`;
   const joined = `${a}${b}`.replace(/\/+/g, '/');
-  return joined === '' ? '/' : joined;
+  if (joined === '') return '/';
+  // Strip trailing slash so '/feedback/' and '/feedback' match swagger consistently
+  return joined.length > 1 ? joined.replace(/\/+$/, '') : joined;
 }
 
 function collectExpectedRoutes() {
