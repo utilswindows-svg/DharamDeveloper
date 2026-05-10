@@ -1004,6 +1004,48 @@ const swaggerSpec = {
         },
       },
     },
+    '/api/feedback/{id}': {
+      patch: {
+        tags: ['Feedback'],
+        summary: 'Update feedback (admin only)',
+        security: [{ bearerAuth: [] }],
+        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'integer' } }],
+        requestBody: {
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  name: { type: 'string' },
+                  email: { type: 'string', format: 'email' },
+                  message: { type: 'string' },
+                  status: { type: 'string', enum: ['new', 'read', 'archived'] },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          '200': { description: 'Updated', content: { 'application/json': { schema: { $ref: '#/components/schemas/Success' } } } },
+          '400': { $ref: '#/components/responses/ValidationError' },
+          '401': { $ref: '#/components/responses/Unauthorized' },
+          '403': { description: 'Admin role required' },
+          '404': { description: 'Not found' },
+        },
+      },
+      delete: {
+        tags: ['Feedback'],
+        summary: 'Delete feedback (admin only)',
+        security: [{ bearerAuth: [] }],
+        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'integer' } }],
+        responses: {
+          '200': { description: 'Deleted', content: { 'application/json': { schema: { $ref: '#/components/schemas/Success' } } } },
+          '401': { $ref: '#/components/responses/Unauthorized' },
+          '403': { description: 'Admin role required' },
+          '404': { description: 'Not found' },
+        },
+      },
+    },
 
     // ---------------- HEALTH ----------------
     '/health': {

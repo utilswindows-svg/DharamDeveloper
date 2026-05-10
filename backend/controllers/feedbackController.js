@@ -31,3 +31,33 @@ exports.listFeedback = async (_req, res, next) => {
     res.json({ success: true, feedback: items });
   } catch (err) { next(err); }
 };
+
+// PATCH /api/feedback/:id  (admin) — update status or message
+exports.updateFeedback = async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    const fb = await Feedback.findByPk(id);
+    if (!fb) throw new ApiError(404, 'Feedback not found');
+    const { name, email, message, status } = req.body || {};
+    if (name !== undefined) fb.name = String(name).trim();
+    if (email !== undefined) fb.email = String(email).trim().toLowerCase();
+    if (message !== undefined) fb.message = String(message).trim();
+    if (status !== undefined) {
+      if (!['new', 'read', 'archived'].includes(status)) throw new ApiError(400, 'Invalid status');
+      fb.status = status;
+    }
+    await fb.save();
+    res.json({ success: true, message: 'Feedback updated', feedback: fb });
+  } catch (err) { next(err); }
+};
+
+// DELETE /api/feedback/:id  (admin)
+exports.deleteFeedback = async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    const fb = await Feedback.findByPk(id);
+    if (!fb) throw new ApiError(404, 'Feedback not found');
+    await fb.destroy();
+    res.json({ success: true, message: 'Feedback deleted', id });
+  } catch (err) { next(err); }
+};
