@@ -6,7 +6,9 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "db:sync": "node scripts/sync.js"
+    "db:sync": "node scripts/sync.js",
+    "check:swagger": "node scripts/checkSwaggerCoverage.js",
+    "test": "node scripts/checkSwaggerCoverage.js"
   },
   "dependencies": {
     "axios": "^1.7.7",
