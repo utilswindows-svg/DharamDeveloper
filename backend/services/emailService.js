@@ -27,6 +27,29 @@ async function sendOtpEmail({ to, otp, ttlSeconds }) {
   return { messageId: info.messageId };
 }
 
+async function send2FAEmail({ to, otp, ttlSeconds, action }) {
+  const transporter = getTransporter();
+  const minutes = Math.round(ttlSeconds / 60);
+  const verb = action === 'disable' ? 'disable' : 'enable';
+  const subject = `Confirm ${verb} two-factor authentication`;
+  const text = `Your verification code to ${verb} two-factor authentication is ${otp}. It expires in ${minutes} minutes.\n\nIf you did not request this change, please secure your account immediately.`;
+  const html = `
+    <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;padding:24px;background:#ffffff;color:#111;">
+      <h2 style="margin:0 0 12px;">Confirm 2FA ${verb}</h2>
+      <p style="font-size:14px;color:#444;margin:0 0 16px;">Use the verification code below to ${verb} two-factor authentication on your account. This code expires in <b>${minutes} minutes</b>.</p>
+      <div style="font-size:32px;font-weight:700;letter-spacing:8px;background:#f4f4f5;padding:16px 24px;border-radius:8px;text-align:center;">${otp}</div>
+      <p style="font-size:12px;color:#888;margin-top:24px;">If you did not request this change, please secure your account immediately.</p>
+    </div>`;
+  const msg = { to, subject, text, html, from: process.env.EMAIL_FROM || process.env.SMTP_USER };
+  if (!transporter) {
+    console.log(`[DEV] 2FA OTP for ${to}: ${otp}`);
+    return { mocked: true };
+  }
+  const info = await transporter.sendMail(msg);
+  console.log(`📧 2FA OTP sent to ${to} (messageId=${info.messageId})`);
+  return { messageId: info.messageId };
+}
+
 function buildLicenseEmail({ to, order }) {
   const subject = `Your ${order.productTitle} License Key`;
   const expiry = order.expiresAt ? new Date(order.expiresAt).toDateString() : 'N/A';
