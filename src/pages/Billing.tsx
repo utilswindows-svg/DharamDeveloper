@@ -5,7 +5,7 @@ import jsPDF from 'jspdf';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import SEO from "@/components/SEO";
-import { api, useAppSelector } from '@/store/authStore';
+import { api } from '@/store/authStore';
 import { useToast } from '@/hooks/use-toast';
 
 interface OrderRow {
@@ -47,7 +47,6 @@ interface InvoiceVM {
 
 const Billing = () => {
   const { toast } = useToast();
-  const user = useAppSelector((s) => s.auth.user);
   const [orders, setOrders] = useState<OrderRow[]>([]);
   const [loading, setLoading] = useState(true);
 
