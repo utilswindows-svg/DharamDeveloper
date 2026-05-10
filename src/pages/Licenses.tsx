@@ -290,7 +290,21 @@ const Licenses = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {licenses.map((lic) => {
+                  {loading && (
+                    <TableRow>
+                      <TableCell colSpan={7} className="text-center py-10 text-muted-foreground">
+                        <Loader2 className="h-5 w-5 animate-spin inline mr-2" /> Loading your licenses…
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {!loading && licenses.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={7} className="text-center py-10 text-muted-foreground">
+                        No licenses yet. Complete a purchase to receive your license key.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {!loading && licenses.map((lic) => {
                     const used = getUsed(lic);
                     const remaining = getRemaining(lic);
                     const percent = getPercent(lic);
