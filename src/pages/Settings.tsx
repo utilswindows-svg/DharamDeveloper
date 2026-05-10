@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Bell, Lock, Eye, EyeOff, Save, Loader2 } from 'lucide-react';
+import { Bell, Lock, Eye, EyeOff, Save, Loader2, ShieldCheck, X, Mail } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import SEO from "@/components/SEO";
@@ -20,6 +20,12 @@ const Settings = () => {
   const [loadingSettings, setLoadingSettings] = useState(true);
   const [savingSettings, setSavingSettings] = useState(false);
   const [updatingPassword, setUpdatingPassword] = useState(false);
+
+  // 2FA email-OTP flow
+  const [twoFaModal, setTwoFaModal] = useState<{ open: boolean; action: 'enable' | 'disable' }>({ open: false, action: 'enable' });
+  const [twoFaOtp, setTwoFaOtp] = useState('');
+  const [twoFaSending, setTwoFaSending] = useState(false);
+  const [twoFaVerifying, setTwoFaVerifying] = useState(false);
 
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: '',
@@ -43,6 +49,12 @@ const Settings = () => {
   }, [toast]);
 
   const handleSettingChange = async (key: keyof typeof settings) => {
+    if (key === 'twoFactor') {
+      // 2FA goes through email OTP — open modal and request code
+      const action: 'enable' | 'disable' = settings.twoFactor ? 'disable' : 'enable';
+      await requestTwoFaOtp(action);
+      return;
+    }
     const next = { ...settings, [key]: !settings[key] };
     setSettings(next);
     try {
@@ -51,6 +63,40 @@ const Settings = () => {
       // revert on failure
       setSettings((s) => ({ ...s, [key]: !next[key] }));
       toast({ title: 'Update failed', description: err?.response?.data?.message || err.message, variant: 'destructive' });
+    }
+  };
+
+  const requestTwoFaOtp = async (action: 'enable' | 'disable') => {
+    setTwoFaSending(true);
+    try {
+      const { data } = await api.post('/user/2fa/request-otp', { enable: action === 'enable' });
+      toast({ title: 'Code sent', description: data?.message || `Verification code sent` });
+      setTwoFaOtp('');
+      setTwoFaModal({ open: true, action });
+    } catch (err: any) {
+      toast({ title: 'Failed to send code', description: err?.response?.data?.message || err.message, variant: 'destructive' });
+    } finally {
+      setTwoFaSending(false);
+    }
+  };
+
+  const handleVerifyTwoFa = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!twoFaOtp.trim()) {
+      toast({ title: 'Enter code', description: 'Please enter the verification code from your email', variant: 'destructive' });
+      return;
+    }
+    setTwoFaVerifying(true);
+    try {
+      const { data } = await api.post('/user/2fa/verify', { otp: twoFaOtp.trim() });
+      setSettings((s) => ({ ...s, twoFactor: !!data?.twoFactor }));
+      toast({ title: 'Success', description: data?.message || 'Two-factor authentication updated' });
+      setTwoFaModal({ open: false, action: twoFaModal.action });
+      setTwoFaOtp('');
+    } catch (err: any) {
+      toast({ title: 'Verification failed', description: err?.response?.data?.message || err.message, variant: 'destructive' });
+    } finally {
+      setTwoFaVerifying(false);
     }
   };
 
@@ -89,7 +135,9 @@ const Settings = () => {
   const handleSaveSettings = async () => {
     setSavingSettings(true);
     try {
-      await api.put('/user/settings', settings);
+      // Exclude twoFactor — managed via OTP flow
+      const { twoFactor, ...rest } = settings;
+      await api.put('/user/settings', rest);
       toast({ title: 'Saved', description: 'All preferences updated' });
     } catch (err: any) {
       toast({ title: 'Save failed', description: err?.response?.data?.message || err.message, variant: 'destructive' });
