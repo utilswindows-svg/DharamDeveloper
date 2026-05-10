@@ -40,6 +40,15 @@ const CheckoutPage = () => {
   const total = +(license.price + tax).toFixed(2);
   const paypalClientId = (import.meta as any).env?.VITE_PAYPAL_CLIENT_ID || "";
 
+  // Parse seats count from human string like "1 Machine", "Up to 100 Machines", "Unlimited Machines"
+  const parseSeats = (s: string): number => {
+    if (!s) return 1;
+    if (/unlimited/i.test(s)) return 9999;
+    const m = s.match(/(\d+)/);
+    return m ? parseInt(m[1], 10) : 1;
+  };
+  const seats = parseSeats(license.machines);
+
   const billingValid =
     billing.firstName && billing.lastName && billing.email &&
     billing.country && billing.zip;
@@ -58,6 +67,7 @@ const CheckoutPage = () => {
         productTitle: product.title,
         licenseName: license.name,
         licenseIndex,
+        seats,
         subtotal: license.price,
         tax,
         total,
