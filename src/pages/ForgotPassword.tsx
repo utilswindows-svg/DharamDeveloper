@@ -3,6 +3,7 @@ import SEO from "@/components/SEO";
 import { motion } from 'framer-motion';
 import { Mail, ArrowLeft, KeyRound, Lock, Eye, EyeOff, CheckCircle2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import {
@@ -67,7 +68,12 @@ const ForgotPassword = () => {
     if (newPassword.length < 8) { setError('Password must be at least 8 characters'); return; }
     if (newPassword !== confirmPassword) { setError('Passwords do not match'); return; }
     const r = await dispatch(resetPassword({ email, newPassword, channel: 'email' }));
-    if (resetPassword.fulfilled.match(r)) setStep('done');
+    if (resetPassword.fulfilled.match(r)) {
+      toast.success('Password updated', {
+        description: 'You can now sign in with your new password.',
+      });
+      navigate('/login', { replace: true });
+    }
   };
 
   const handleResend = async () => {
