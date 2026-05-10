@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const auth = require('../middleware/auth');
 const optionalAuth = require('../middleware/optionalAuth');
-const { profile } = require('../controllers/userController');
+const { profile, updateProfile } = require('../controllers/userController');
 const {
   createBillingOrder,
   createPaypalOrder,
@@ -11,6 +11,7 @@ const {
 } = require('../controllers/orderController');
 
 router.get('/profile', auth, profile);
+router.put('/profile', auth, updateProfile);
 
 // Orders
 router.get('/orders', auth, listMyOrders);
