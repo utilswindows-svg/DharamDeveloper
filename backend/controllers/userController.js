@@ -1,9 +1,21 @@
 const { User } = require('../models');
 const ApiError = require('../utils/ApiError');
 const bcrypt = require('bcrypt');
+const { send2FAEmail } = require('../services/emailService');
+const { generateOtp } = require('../utils/otp');
 const SALT_ROUNDS = 12;
 
 const SETTINGS_KEYS = ['emailNotifications', 'smsNotifications', 'marketingEmails', 'securityAlerts', 'twoFactor'];
+
+// In-memory store for 2FA toggle OTPs: { userId -> { otp, action, expiresAt, cooldownUntil } }
+const TWOFA_TTL_MS = 10 * 60 * 1000; // 10 minutes
+const TWOFA_COOLDOWN_MS = 60 * 1000; // 60s between requests
+const twoFaStore = new Map();
+const cleanup = setInterval(() => {
+  const now = Date.now();
+  for (const [k, v] of twoFaStore) if (v.expiresAt < now) twoFaStore.delete(k);
+}, 60_000);
+if (cleanup.unref) cleanup.unref();
 
 exports.profile = async (req, res, next) => {
   try {
