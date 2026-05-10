@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   Key,
@@ -14,6 +14,7 @@ import {
   Plus,
   Trash2,
   Settings2,
+  Loader2,
 } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -39,6 +40,7 @@ import {
 } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import SEO from "@/components/SEO";
+import { api } from '@/store/authStore';
 
 interface Activation {
   id: string;
@@ -63,93 +65,58 @@ const Licenses = () => {
   const [revealed, setRevealed] = useState<Record<number, boolean>>({});
   const [manageId, setManageId] = useState<number | null>(null);
   const [newDevice, setNewDevice] = useState('');
+  const [licenses, setLicenses] = useState<License[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const [licenses, setLicenses] = useState<License[]>([
-    {
-      id: 1,
-      licenseKey: 'WCP-2026-A1B2-C3D4-E5F6',
-      software: 'Windows Cleaner Pro',
-      systems: 3,
-      purchase: 'March 15, 2026',
-      expiry: 'March 15, 2027',
-      status: 'active',
-      createdAt: '2026-03-15 10:24:11',
-      activations: [
-        { id: 'a1', deviceName: 'DESKTOP-RS-OFFICE', activatedAt: '2026-03-15 10:30:00' },
-        { id: 'a2', deviceName: 'LAPTOP-RS-HOME', activatedAt: '2026-03-18 19:12:44' },
-      ],
-    },
-    {
-      id: 6,
-      licenseKey: 'MBX-2026-50PC-PDFC-9X7Q',
-      software: 'MBOX to PDF Converter',
-      systems: 50,
-      purchase: 'May 1, 2026',
-      expiry: 'May 1, 2027',
-      status: 'active',
-      createdAt: '2026-05-01 09:00:00',
-      activations: [
-        { id: 'm1', deviceName: 'PC-MIGRATION-01', activatedAt: '2026-05-01 11:05:21' },
-        { id: 'm2', deviceName: 'PC-MIGRATION-02', activatedAt: '2026-05-01 11:18:09' },
-        { id: 'm3', deviceName: 'PC-MIGRATION-03', activatedAt: '2026-05-02 09:44:51' },
-      ],
-    },
-    {
-      id: 2,
-      licenseKey: 'SOP-2026-X9Y8-Z7W6-V5U4',
-      software: 'System Optimizer',
-      systems: 1,
-      purchase: 'February 10, 2026',
-      expiry: 'February 10, 2027',
-      status: 'active',
-      createdAt: '2026-02-10 16:45:02',
-      activations: [
-        { id: 's1', deviceName: 'WORKSTATION-AV', activatedAt: '2026-02-10 17:01:11' },
-      ],
-    },
-    {
-      id: 3,
-      licenseKey: 'PWM-2026-K5L6-M7N8-O9P0',
-      software: 'Password Manager',
-      systems: 5,
-      purchase: 'January 5, 2026',
-      expiry: 'January 5, 2027',
-      status: 'active',
-      createdAt: '2026-01-05 08:12:33',
-      activations: [
-        { id: 'p1', deviceName: 'PHONE-ANDROID', activatedAt: '2026-01-05 08:20:00' },
-        { id: 'p2', deviceName: 'LAPTOP-WORK', activatedAt: '2026-01-05 09:11:00' },
-        { id: 'p3', deviceName: 'TABLET-IPAD', activatedAt: '2026-01-06 13:45:00' },
-      ],
-    },
-    {
-      id: 4,
-      licenseKey: 'TRL-2025-T1R2-I3A4-L5K6',
-      software: 'MBOX to PDF Converter',
-      systems: 1,
-      purchase: 'December 1, 2025',
-      expiry: 'December 15, 2025',
-      status: 'trial',
-      createdAt: '2025-12-01 12:00:00',
-      activations: [
-        { id: 't1', deviceName: 'TRIAL-PC-01', activatedAt: '2025-12-01 12:05:00' },
-      ],
-    },
-    {
-      id: 5,
-      licenseKey: 'OLD-2024-E7X8-P9I0-R1E2',
-      software: 'PST Migration Tool',
-      systems: 2,
-      purchase: 'May 20, 2024',
-      expiry: 'May 20, 2025',
-      status: 'expired',
-      createdAt: '2024-05-20 09:30:45',
-      activations: [
-        { id: 'o1', deviceName: 'OLD-PC-01', activatedAt: '2024-05-20 09:35:00' },
-        { id: 'o2', deviceName: 'OLD-PC-02', activatedAt: '2024-05-21 10:10:00' },
-      ],
-    },
-  ]);
+  const fmtDate = (d?: string | Date | null) => {
+    if (!d) return '—';
+    try {
+      return new Date(d).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+    } catch { return '—'; }
+  };
+  const fmtDateTime = (d?: string | Date | null) => {
+    if (!d) return '';
+    try { return new Date(d).toISOString().replace('T', ' ').slice(0, 19); } catch { return ''; }
+  };
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const { data } = await api.get('/user/orders');
+        if (!mounted) return;
+        const orders = (data?.orders || []) as any[];
+        const mapped: License[] = orders
+          .filter((o) => o.paymentStatus === 'paid' && o.licenseKey)
+          .map((o) => {
+            const now = Date.now();
+            const exp = o.expiresAt ? new Date(o.expiresAt).getTime() : null;
+            const status: License['status'] = exp && exp < now ? 'expired' : 'active';
+            return {
+              id: o.id,
+              licenseKey: o.licenseKey,
+              software: o.productTitle,
+              systems: Number(o.seats) || 1,
+              purchase: fmtDate(o.createdAt),
+              expiry: fmtDate(o.expiresAt),
+              status,
+              createdAt: fmtDateTime(o.createdAt),
+              activations: [],
+            };
+          });
+        setLicenses(mapped);
+      } catch (err: any) {
+        toast({
+          title: 'Could not load licenses',
+          description: err?.response?.data?.message || err.message,
+          variant: 'destructive',
+        });
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+    return () => { mounted = false; };
+  }, [toast]);
 
   // Per-license activation counting
   const getUsed = (lic: License) => lic.activations.length;
