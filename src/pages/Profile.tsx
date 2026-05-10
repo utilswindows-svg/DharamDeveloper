@@ -1,32 +1,92 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { User, Mail, Phone, MapPin, Edit2, Save, X } from 'lucide-react';
+import { User, Edit2, Save, X, Loader2 } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import SEO from "@/components/SEO";
+import { api, useAppDispatch, useAppSelector } from '@/store/authStore';
+import { toast } from '@/hooks/use-toast';
 
 const Profile = () => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [profileData, setProfileData] = useState({
-    name: 'John Doe',
-    email: 'john@example.com',
-    phone: '+1 (555) 123-4567',
-    company: 'Tech Solutions Inc',
-    country: 'United States',
-    city: 'New York',
-    address: '123 Main Street',
-  });
+  const dispatch = useAppDispatch();
+  const reduxUser = useAppSelector((s) => s.auth.user);
 
+  const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [profileData, setProfileData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+  });
   const [formData, setFormData] = useState(profileData);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const { data } = await api.get('/user/profile');
+        if (!mounted) return;
+        const u = data?.user || {};
+        const next = {
+          name: u.name || '',
+          email: u.email || '',
+          phone: u.phone || '',
+        };
+        setProfileData(next);
+        setFormData(next);
+      } catch (err: any) {
+        toast({
+          title: 'Failed to load profile',
+          description: err?.response?.data?.message || err?.message || 'Please try again',
+          variant: 'destructive',
+        });
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+    return () => { mounted = false; };
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSave = () => {
-    setProfileData(formData);
-    setIsEditing(false);
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const { data } = await api.put('/user/profile', {
+        name: formData.name,
+        phone: formData.phone,
+      });
+      const u = data?.user || {};
+      const next = {
+        name: u.name || formData.name,
+        email: u.email || formData.email,
+        phone: u.phone || '',
+      };
+      setProfileData(next);
+      setFormData(next);
+
+      // Keep Redux + localStorage user in sync
+      try {
+        const merged = { ...(reduxUser || {}), ...u };
+        localStorage.setItem('user', JSON.stringify(merged));
+        dispatch({ type: 'auth/refresh/fulfilled', payload: { user: merged } });
+      } catch {}
+
+      toast({ title: 'Profile updated', description: data?.message || 'Your changes have been saved.' });
+      setIsEditing(false);
+    } catch (err: any) {
+      toast({
+        title: 'Update failed',
+        description: err?.response?.data?.message || err?.message || 'Please try again',
+        variant: 'destructive',
+      });
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleCancel = () => {
@@ -92,6 +152,13 @@ const Profile = () => {
                 </button>
               </div>
 
+              {loading && (
+                <div className="flex items-center justify-center py-12 text-muted-foreground">
+                  <Loader2 className="h-5 w-5 animate-spin mr-2" /> Loading profile...
+                </div>
+              )}
+
+              {!loading && (
               {/* Form */}
               <form className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
@@ -114,7 +181,7 @@ const Profile = () => {
                       name="email"
                       value={formData.email}
                       onChange={handleInputChange}
-                      disabled={!isEditing}
+                      disabled
                       className="w-full px-4 py-2 border border-border rounded-lg disabled:bg-gray-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-accent focus:border-transparent outline-none"
                     />
                   </div>
@@ -130,54 +197,6 @@ const Profile = () => {
                       className="w-full px-4 py-2 border border-border rounded-lg disabled:bg-gray-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-accent focus:border-transparent outline-none"
                     />
                   </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Company</label>
-                    <input
-                      type="text"
-                      name="company"
-                      value={formData.company}
-                      onChange={handleInputChange}
-                      disabled={!isEditing}
-                      className="w-full px-4 py-2 border border-border rounded-lg disabled:bg-gray-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-accent focus:border-transparent outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Country</label>
-                    <input
-                      type="text"
-                      name="country"
-                      value={formData.country}
-                      onChange={handleInputChange}
-                      disabled={!isEditing}
-                      className="w-full px-4 py-2 border border-border rounded-lg disabled:bg-gray-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-accent focus:border-transparent outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2">City</label>
-                    <input
-                      type="text"
-                      name="city"
-                      value={formData.city}
-                      onChange={handleInputChange}
-                      disabled={!isEditing}
-                      className="w-full px-4 py-2 border border-border rounded-lg disabled:bg-gray-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-accent focus:border-transparent outline-none"
-                    />
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium mb-2">Address</label>
-                    <input
-                      type="text"
-                      name="address"
-                      value={formData.address}
-                      onChange={handleInputChange}
-                      disabled={!isEditing}
-                      className="w-full px-4 py-2 border border-border rounded-lg disabled:bg-gray-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-accent focus:border-transparent outline-none"
-                    />
-                  </div>
                 </div>
 
                 {isEditing && (
@@ -185,21 +204,24 @@ const Profile = () => {
                     <button
                       type="button"
                       onClick={handleSave}
-                      className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-accent text-white rounded-lg hover:opacity-90 transition-all"
+                      disabled={saving}
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-accent text-white rounded-lg hover:opacity-90 transition-all disabled:opacity-60"
                     >
-                      <Save className="h-4 w-4" />
-                      Save Changes
+                      {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                      {saving ? 'Saving...' : 'Save Changes'}
                     </button>
                     <button
                       type="button"
                       onClick={handleCancel}
-                      className="flex-1 px-4 py-3 border border-border rounded-lg hover:bg-gray-50 transition-colors"
+                      disabled={saving}
+                      className="flex-1 px-4 py-3 border border-border rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-60"
                     >
                       Cancel
                     </button>
                   </div>
                 )}
               </form>
+              )}
             </motion.div>
           </div>
         </div>
