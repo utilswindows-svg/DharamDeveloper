@@ -10,4 +10,7 @@ const Product = require('./Product');
 Category.hasMany(Product, { foreignKey: 'categoryId', as: 'products' });
 Product.belongsTo(Category, { foreignKey: 'categoryId', as: 'category' });
 
+User.hasMany(Download, { foreignKey: 'userId', as: 'downloads' });
+Download.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+
 module.exports = { sequelize, User, Order, Feedback, Download, Category, Product };
