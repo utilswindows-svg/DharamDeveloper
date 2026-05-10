@@ -218,6 +218,10 @@ const CheckoutPage = () => {
                           <p className="text-[11px] text-muted-foreground mt-2">Please change your password from your profile after logging in.</p>
                         </div>
                       )}
+                      <div className="mt-5 flex flex-col sm:flex-row gap-2 justify-center">
+                        <Button type="button" onClick={() => navigate("/dashboard")}>Go to Dashboard</Button>
+                        <Button type="button" variant="outline" onClick={() => navigate("/downloads")}>View Downloads</Button>
+                      </div>
                     </div>
                   ) : !paypalClientId ? (
                     <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-muted-foreground">
