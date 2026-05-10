@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Bell, Lock, Eye, EyeOff, Save, Loader2 } from 'lucide-react';
+import { Bell, Lock, Eye, EyeOff, Save, Loader2, ShieldCheck, X, Mail } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import SEO from "@/components/SEO";
@@ -20,6 +20,12 @@ const Settings = () => {
   const [loadingSettings, setLoadingSettings] = useState(true);
   const [savingSettings, setSavingSettings] = useState(false);
   const [updatingPassword, setUpdatingPassword] = useState(false);
+
+  // 2FA email-OTP flow
+  const [twoFaModal, setTwoFaModal] = useState<{ open: boolean; action: 'enable' | 'disable' }>({ open: false, action: 'enable' });
+  const [twoFaOtp, setTwoFaOtp] = useState('');
+  const [twoFaSending, setTwoFaSending] = useState(false);
+  const [twoFaVerifying, setTwoFaVerifying] = useState(false);
 
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: '',
@@ -43,6 +49,12 @@ const Settings = () => {
   }, [toast]);
 
   const handleSettingChange = async (key: keyof typeof settings) => {
+    if (key === 'twoFactor') {
+      // 2FA goes through email OTP — open modal and request code
+      const action: 'enable' | 'disable' = settings.twoFactor ? 'disable' : 'enable';
+      await requestTwoFaOtp(action);
+      return;
+    }
     const next = { ...settings, [key]: !settings[key] };
     setSettings(next);
     try {
@@ -51,6 +63,40 @@ const Settings = () => {
       // revert on failure
       setSettings((s) => ({ ...s, [key]: !next[key] }));
       toast({ title: 'Update failed', description: err?.response?.data?.message || err.message, variant: 'destructive' });
+    }
+  };
+
+  const requestTwoFaOtp = async (action: 'enable' | 'disable') => {
+    setTwoFaSending(true);
+    try {
+      const { data } = await api.post('/user/2fa/request-otp', { enable: action === 'enable' });
+      toast({ title: 'Code sent', description: data?.message || `Verification code sent` });
+      setTwoFaOtp('');
+      setTwoFaModal({ open: true, action });
+    } catch (err: any) {
+      toast({ title: 'Failed to send code', description: err?.response?.data?.message || err.message, variant: 'destructive' });
+    } finally {
+      setTwoFaSending(false);
+    }
+  };
+
+  const handleVerifyTwoFa = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!twoFaOtp.trim()) {
+      toast({ title: 'Enter code', description: 'Please enter the verification code from your email', variant: 'destructive' });
+      return;
+    }
+    setTwoFaVerifying(true);
+    try {
+      const { data } = await api.post('/user/2fa/verify', { otp: twoFaOtp.trim() });
+      setSettings((s) => ({ ...s, twoFactor: !!data?.twoFactor }));
+      toast({ title: 'Success', description: data?.message || 'Two-factor authentication updated' });
+      setTwoFaModal({ open: false, action: twoFaModal.action });
+      setTwoFaOtp('');
+    } catch (err: any) {
+      toast({ title: 'Verification failed', description: err?.response?.data?.message || err.message, variant: 'destructive' });
+    } finally {
+      setTwoFaVerifying(false);
     }
   };
 
@@ -89,7 +135,9 @@ const Settings = () => {
   const handleSaveSettings = async () => {
     setSavingSettings(true);
     try {
-      await api.put('/user/settings', settings);
+      // Exclude twoFactor — managed via OTP flow
+      const { twoFactor, ...rest } = settings;
+      await api.put('/user/settings', rest);
       toast({ title: 'Saved', description: 'All preferences updated' });
     } catch (err: any) {
       toast({ title: 'Save failed', description: err?.response?.data?.message || err.message, variant: 'destructive' });
@@ -173,20 +221,31 @@ const Settings = () => {
 
               {/* Two-Factor Authentication */}
               <div className="mb-6 p-4 border border-border rounded-lg">
-                <div className="flex items-center justify-between mb-2">
-                  <div>
-                    <p className="font-medium">Two-Factor Authentication</p>
-                    <p className="text-sm text-muted-foreground">Add an extra layer of security to your account</p>
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className="font-medium">Two-Factor Authentication</p>
+                      <span className={`text-xs px-2 py-0.5 rounded-full ${settings.twoFactor ? 'bg-green-100 text-green-700' : 'bg-muted text-muted-foreground'}`}>
+                        {settings.twoFactor ? 'Enabled' : 'Disabled'}
+                      </span>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      We'll email a verification code to confirm this change.
+                    </p>
                   </div>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={settings.twoFactor}
-                      onChange={() => handleSettingChange('twoFactor')}
-                      disabled={loadingSettings}
-                      className="w-5 h-5 rounded accent-accent"
-                    />
-                  </label>
+                  <button
+                    type="button"
+                    onClick={() => requestTwoFaOtp(settings.twoFactor ? 'disable' : 'enable')}
+                    disabled={loadingSettings || twoFaSending}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all ${
+                      settings.twoFactor
+                        ? 'bg-destructive/10 text-destructive hover:bg-destructive/20'
+                        : 'bg-accent text-white hover:opacity-90'
+                    } disabled:opacity-50`}
+                  >
+                    {twoFaSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />}
+                    {settings.twoFactor ? 'Disable' : 'Enable'}
+                  </button>
                 </div>
               </div>
 
@@ -278,6 +337,69 @@ const Settings = () => {
       </section>
 
       <Footer />
+
+      {/* 2FA OTP Modal */}
+      {twoFaModal.open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 relative"
+          >
+            <button
+              type="button"
+              onClick={() => setTwoFaModal({ ...twoFaModal, open: false })}
+              className="absolute top-4 right-4 text-muted-foreground hover:text-foreground"
+              aria-label="Close"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 rounded-full bg-accent/10">
+                <Mail className="h-6 w-6 text-accent" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold">
+                  {twoFaModal.action === 'enable' ? 'Enable' : 'Disable'} Two-Factor
+                </h3>
+                <p className="text-sm text-muted-foreground">Enter the code we emailed you</p>
+              </div>
+            </div>
+            <form onSubmit={handleVerifyTwoFa} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Verification Code</label>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  autoFocus
+                  value={twoFaOtp}
+                  onChange={(e) => setTwoFaOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  placeholder="6-digit code"
+                  className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent outline-none text-center text-2xl tracking-widest font-mono"
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => requestTwoFaOtp(twoFaModal.action)}
+                  disabled={twoFaSending}
+                  className="flex-1 px-4 py-2 border border-border rounded-lg hover:bg-muted text-sm font-medium disabled:opacity-50"
+                >
+                  {twoFaSending ? 'Sending...' : 'Resend code'}
+                </button>
+                <button
+                  type="submit"
+                  disabled={twoFaVerifying || !twoFaOtp.trim()}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-accent text-white rounded-lg hover:opacity-90 font-medium disabled:opacity-50"
+                >
+                  {twoFaVerifying ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />}
+                  {twoFaVerifying ? 'Verifying...' : 'Verify'}
+                </button>
+              </div>
+            </form>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 };

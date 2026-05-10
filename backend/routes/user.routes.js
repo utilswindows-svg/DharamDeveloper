@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const auth = require('../middleware/auth');
 const optionalAuth = require('../middleware/optionalAuth');
-const { profile, updateProfile, getSettings, updateSettings, changePassword } = require('../controllers/userController');
+const { profile, updateProfile, getSettings, updateSettings, changePassword, request2FAOtp, verify2FA } = require('../controllers/userController');
 const {
   createBillingOrder,
   createPaypalOrder,
@@ -18,6 +18,10 @@ router.put('/profile', auth, updateProfile);
 router.get('/settings', auth, getSettings);
 router.put('/settings', auth, updateSettings);
 router.post('/change-password', auth, changePassword);
+
+// Two-Factor Authentication (email OTP)
+router.post('/2fa/request-otp', auth, request2FAOtp);
+router.post('/2fa/verify', auth, verify2FA);
 
 // Orders
 router.get('/orders', auth, listMyOrders);
