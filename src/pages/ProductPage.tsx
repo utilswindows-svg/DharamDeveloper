@@ -120,6 +120,7 @@ const ProductPage = () => {
       }
     : undefined;
 
+  const apiBaseEarly = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000/api';
   const productSchema: Record<string, any> = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
@@ -127,6 +128,8 @@ const ProductPage = () => {
     description: product.description,
     applicationCategory: "UtilitiesApplication",
     operatingSystem: "Windows",
+    image: `${apiBaseEarly}/catalog/products/${product.slug}/og.svg`,
+    url: `https://windowsutils.lovable.app/products/${product.slug}`,
     ...(minPrice !== undefined && {
       offers: {
         "@type": "Offer",
@@ -150,14 +153,44 @@ const ProductPage = () => {
       }
     : null;
 
+  // Dynamic SEO derived from API response
+  const featureKeywords = (product.features || []).slice(0, 4).map((f) => f.title).join(', ');
+  const formatKeywords = (product.formats || []).join(', ');
+  const categoryLabel = (apiProduct as any)?.category?.label;
+
+  const metaTitle = product.tagline
+    ? `${product.title} — ${product.tagline}`
+    : product.title;
+  const trimmedDescription = (() => {
+    const base = product.description || product.tagline || '';
+    const priceSuffix = minPrice !== undefined ? ` Starting at $${minPrice}.` : '';
+    const max = 160 - priceSuffix.length;
+    if (base.length <= max) return `${base}${priceSuffix}`;
+    return `${base.slice(0, Math.max(0, max - 1)).trimEnd()}…${priceSuffix}`;
+  })();
+  const metaKeywords = [
+    product.title,
+    product.tagline,
+    categoryLabel,
+    'Windows utility',
+    'Windows software',
+    product.slug,
+    formatKeywords,
+    featureKeywords,
+  ]
+    .filter(Boolean)
+    .join(', ');
+  const ogImage = `${apiBaseEarly}/catalog/products/${product.slug}/og.svg`;
+
   return (
     <div className="min-h-screen">
       <SEO
-        title={`${product.title} - ${product.tagline}`}
-        description={product.description}
+        title={metaTitle}
+        description={trimmedDescription}
         path={`/products/${product.slug}`}
         type="product"
-        keywords={`${product.title}, ${product.tagline}, Windows utility, ${product.slug}`}
+        keywords={metaKeywords}
+        image={ogImage}
         schema={faqSchema ? [productSchema, faqSchema] : productSchema}
       />
       <Navbar />
