@@ -13,4 +13,7 @@ Product.belongsTo(Category, { foreignKey: 'categoryId', as: 'category' });
 User.hasMany(Download, { foreignKey: 'userId', as: 'downloads' });
 Download.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 
+User.hasMany(Order, { foreignKey: 'userId', as: 'orders' });
+Order.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+
 module.exports = { sequelize, User, Order, Feedback, Download, Category, Product };

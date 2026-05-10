@@ -12,6 +12,7 @@ const {
 } = require('../controllers/orderController');
 const { listDownloads, listHistory, recordDownload, adminListDownloads } = require('../controllers/downloadController');
 const { listUsers: adminListUsers, getUserDetail: adminGetUser } = require('../controllers/adminUserController');
+const { listLicenses: adminListLicenses, revokeLicense: adminRevokeLicense } = require('../controllers/adminLicenseController');
 
 router.get('/profile', auth, profile);
 router.put('/profile', auth, updateProfile);
@@ -43,5 +44,9 @@ router.get('/admin/downloads', auth, requireRole('admin'), adminListDownloads);
 // Admin: users with purchase & download stats
 router.get('/admin/users', auth, requireRole('admin'), adminListUsers);
 router.get('/admin/users/:id', auth, requireRole('admin'), adminGetUser);
+
+// Admin: licenses (derived from paid orders)
+router.get('/admin/licenses', auth, requireRole('admin'), adminListLicenses);
+router.post('/admin/licenses/:id/revoke', auth, requireRole('admin'), adminRevokeLicense);
 
 module.exports = router;
