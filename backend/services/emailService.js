@@ -86,4 +86,4 @@ async function sendLicenseEmail({ to, order }) {
   return { messageId: info.messageId };
 }
 
-module.exports = { sendOtpEmail, sendLicenseEmail };
+module.exports = { sendOtpEmail, sendLicenseEmail, send2FAEmail };
