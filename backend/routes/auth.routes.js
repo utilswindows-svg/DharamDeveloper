@@ -3,6 +3,7 @@ const { body, oneOf } = require('express-validator');
 const validate = require('../middleware/validate');
 const { authLimiter, otpLimiter } = require('../middleware/rateLimit');
 const c = require('../controllers/authController');
+const auth = require('../middleware/auth');
 
 // E.164 phone regex (e.g., +14155552671)
 const phoneRule = body('phone').optional().matches(/^\+[1-9]\d{6,14}$/).withMessage('phone must be E.164 (+1234567890)');
@@ -51,5 +52,8 @@ router.post('/social', authLimiter,
     body('provider').isIn(['google', 'facebook']),
     body('accessToken').isString().notEmpty(),
   ], validate, c.socialLogin);
+
+// Logout — revokes all refresh tokens for the authenticated user
+router.post('/logout', auth, c.logout);
 
 module.exports = router;
