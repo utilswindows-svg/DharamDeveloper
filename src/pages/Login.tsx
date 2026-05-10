@@ -204,7 +204,7 @@ const Login = () => {
           </div>
 
           {/* Social Login Buttons */}
-          <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className="grid grid-cols-1 gap-4 mb-6">
             {/* Gmail Button */}
             <motion.button
               whileHover={{ scale: 1.02 }}
@@ -218,16 +218,6 @@ const Login = () => {
               <span className="hidden sm:inline text-sm">Gmail</span>
             </motion.button>
 
-            {/* Facebook Button */}
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={handleFacebookLogin}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 border-2 border-gray-300 rounded-lg hover:border-gray-400 hover:bg-gray-50 transition-all font-medium text-gray-700"
-            >
-              <User className="h-5 w-5 text-blue-600" />
-              <span className="hidden sm:inline text-sm">Facebook</span>
-            </motion.button>
           </div>
 
           {/* Sign Up Link */}
