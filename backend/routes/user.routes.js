@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const auth = require('../middleware/auth');
 const optionalAuth = require('../middleware/optionalAuth');
-const { profile, updateProfile } = require('../controllers/userController');
+const { profile, updateProfile, getSettings, updateSettings, changePassword } = require('../controllers/userController');
 const {
   createBillingOrder,
   createPaypalOrder,
@@ -12,6 +12,11 @@ const {
 
 router.get('/profile', auth, profile);
 router.put('/profile', auth, updateProfile);
+
+// Settings
+router.get('/settings', auth, getSettings);
+router.put('/settings', auth, updateSettings);
+router.post('/change-password', auth, changePassword);
 
 // Orders
 router.get('/orders', auth, listMyOrders);

@@ -11,6 +11,11 @@ const User = sequelize.define('User', {
   provider: { type: DataTypes.ENUM('local', 'google', 'facebook'), allowNull: false, defaultValue: 'local' },
   providerId: { type: DataTypes.STRING(255), allowNull: true },
   avatar:   { type: DataTypes.STRING(500), allowNull: true },
+  emailNotifications: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
+  smsNotifications:   { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+  marketingEmails:    { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
+  securityAlerts:     { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
+  twoFactor:          { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
 }, { tableName: 'users', timestamps: true });
 
 module.exports = User;

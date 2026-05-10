@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Bell, Lock, Eye, EyeOff, Save } from 'lucide-react';
+import { Bell, Lock, Eye, EyeOff, Save, Loader2 } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import SEO from "@/components/SEO";
+import { api } from '@/store/authStore';
+import { useToast } from '@/hooks/use-toast';
 
 const Settings = () => {
+  const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
   const [settings, setSettings] = useState({
     emailNotifications: true,
@@ -14,6 +17,9 @@ const Settings = () => {
     securityAlerts: true,
     twoFactor: false,
   });
+  const [loadingSettings, setLoadingSettings] = useState(true);
+  const [savingSettings, setSavingSettings] = useState(false);
+  const [updatingPassword, setUpdatingPassword] = useState(false);
 
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: '',
@@ -21,8 +27,31 @@ const Settings = () => {
     confirmPassword: '',
   });
 
-  const handleSettingChange = (key: string) => {
-    setSettings(prev => ({ ...prev, [key]: !prev[key] }));
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const { data } = await api.get('/user/settings');
+        if (mounted && data?.settings) setSettings((s) => ({ ...s, ...data.settings }));
+      } catch (err: any) {
+        toast({ title: 'Failed to load settings', description: err?.response?.data?.message || err.message, variant: 'destructive' });
+      } finally {
+        if (mounted) setLoadingSettings(false);
+      }
+    })();
+    return () => { mounted = false; };
+  }, [toast]);
+
+  const handleSettingChange = async (key: keyof typeof settings) => {
+    const next = { ...settings, [key]: !settings[key] };
+    setSettings(next);
+    try {
+      await api.put('/user/settings', { [key]: next[key] });
+    } catch (err: any) {
+      // revert on failure
+      setSettings((s) => ({ ...s, [key]: !next[key] }));
+      toast({ title: 'Update failed', description: err?.response?.data?.message || err.message, variant: 'destructive' });
+    }
   };
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,14 +59,43 @@ const Settings = () => {
     setPasswordForm(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleUpdatePassword = (e: React.FormEvent) => {
+  const handleUpdatePassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Updating password');
-    setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+    const { currentPassword, newPassword, confirmPassword } = passwordForm;
+    if (!currentPassword || !newPassword) {
+      toast({ title: 'Missing fields', description: 'Enter current and new password', variant: 'destructive' });
+      return;
+    }
+    if (newPassword.length < 8) {
+      toast({ title: 'Weak password', description: 'New password must be at least 8 characters', variant: 'destructive' });
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast({ title: 'Mismatch', description: 'New password and confirmation do not match', variant: 'destructive' });
+      return;
+    }
+    setUpdatingPassword(true);
+    try {
+      const { data } = await api.post('/user/change-password', { currentPassword, newPassword });
+      toast({ title: 'Success', description: data?.message || 'Password updated' });
+      setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+    } catch (err: any) {
+      toast({ title: 'Update failed', description: err?.response?.data?.message || err.message, variant: 'destructive' });
+    } finally {
+      setUpdatingPassword(false);
+    }
   };
 
-  const handleSaveSettings = () => {
-    console.log('Settings saved', settings);
+  const handleSaveSettings = async () => {
+    setSavingSettings(true);
+    try {
+      await api.put('/user/settings', settings);
+      toast({ title: 'Saved', description: 'All preferences updated' });
+    } catch (err: any) {
+      toast({ title: 'Save failed', description: err?.response?.data?.message || err.message, variant: 'destructive' });
+    } finally {
+      setSavingSettings(false);
+    }
   };
 
   return (
@@ -91,7 +149,8 @@ const Settings = () => {
                       <input
                         type="checkbox"
                         checked={settings[item.key as keyof typeof settings]}
-                        onChange={() => handleSettingChange(item.key)}
+                        onChange={() => handleSettingChange(item.key as keyof typeof settings)}
+                        disabled={loadingSettings}
                         className="w-5 h-5 rounded accent-accent"
                       />
                     </label>
@@ -124,6 +183,7 @@ const Settings = () => {
                       type="checkbox"
                       checked={settings.twoFactor}
                       onChange={() => handleSettingChange('twoFactor')}
+                      disabled={loadingSettings}
                       className="w-5 h-5 rounded accent-accent"
                     />
                   </label>
@@ -187,10 +247,11 @@ const Settings = () => {
 
                   <button
                     type="submit"
+                    disabled={updatingPassword}
                     className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-accent text-white rounded-lg hover:opacity-90 transition-all font-medium"
                   >
-                    <Lock className="h-4 w-4" />
-                    Update Password
+                    {updatingPassword ? <Loader2 className="h-4 w-4 animate-spin" /> : <Lock className="h-4 w-4" />}
+                    {updatingPassword ? 'Updating...' : 'Update Password'}
                   </button>
                 </form>
               </div>
@@ -205,10 +266,11 @@ const Settings = () => {
             >
               <button
                 onClick={handleSaveSettings}
+                disabled={savingSettings}
                 className="flex items-center gap-2 px-6 py-3 bg-accent text-white rounded-lg hover:opacity-90 transition-all font-medium"
               >
-                <Save className="h-5 w-5" />
-                Save All Changes
+                {savingSettings ? <Loader2 className="h-5 w-5 animate-spin" /> : <Save className="h-5 w-5" />}
+                {savingSettings ? 'Saving...' : 'Save All Changes'}
               </button>
             </motion.div>
           </div>
