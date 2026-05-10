@@ -14,6 +14,8 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { NavLink } from "@/components/NavLink";
+import { useAppDispatch, logoutUser } from "@/store/authStore";
+import { toast } from "@/hooks/use-toast";
 import {
   Sidebar,
   SidebarContent,
@@ -52,10 +54,17 @@ export function AdminSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
-  const handleLogout = () => {
-    localStorage.removeItem("isLoggedIn");
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      await dispatch(logoutUser()).unwrap();
+      toast({ title: "Logged out", description: "You have been signed out." });
+    } catch {
+      // logoutUser already clears local state even on error
+    } finally {
+      navigate("/login");
+    }
   };
 
   const baseCls = "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground";
