@@ -1007,6 +1007,11 @@ const swaggerSpec = {
 
     // ---------------- HEALTH ----------------
     '/health': {
+      get: {
+        tags: ['Auth'],
+        summary: 'Health check',
+        responses: { '200': { description: 'OK' } },
+      },
     },
     '/api/user/admin/licenses': {
       get: {
@@ -1035,13 +1040,6 @@ const swaggerSpec = {
           '403': { description: 'Admin role required' },
           '404': { description: 'Not found' },
         },
-      },
-    },
-    '/health-noop': {
-      get: {
-        tags: ['Auth'],
-        summary: 'Health check',
-        responses: { '200': { description: 'OK' } },
       },
     },
   },
