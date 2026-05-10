@@ -1,7 +1,9 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, FileDown, HardDrive, Search, Users, Download, TrendingUp, Filter } from 'lucide-react';
+import { Calendar, FileDown, HardDrive, Search, Users, Download, TrendingUp, Filter, Loader2 } from 'lucide-react';
 import AdminLayout from '@/components/admin/AdminLayout';
+import { api } from '@/store/authStore';
+import { toast } from '@/hooks/use-toast';
 import {
   Table,
   TableBody,
@@ -26,37 +28,66 @@ interface DownloadRecord {
   email: string;
   fileName: string;
   product: string;
+  productSlug?: string;
+  version?: string;
   date: string;
   time: string;
   size: string;
   device: string;
   ip: string;
   type: 'free' | 'licensed';
+  createdAt: string;
 }
-
-const allDownloads: DownloadRecord[] = [
-  { id: 1, user: 'Rohit Sharma', email: 'rohit@example.com', fileName: 'WindowsCleanerPro-v2.5.1.exe', product: 'Windows Cleaner Pro', date: 'April 22, 2026', time: '14:32', size: '45.2 MB', device: 'Windows 11 PC', ip: '103.21.45.8', type: 'free' },
-  { id: 2, user: 'Anita Verma', email: 'anita.v@example.com', fileName: 'SystemOptimizer-v1.8.0.exe', product: 'System Optimizer', date: 'April 22, 2026', time: '11:18', size: '38.7 MB', device: 'Windows 10 Laptop', ip: '49.207.12.144', type: 'free' },
-  { id: 3, user: 'Karan Mehta', email: 'karan.m@example.com', fileName: 'PasswordManager-v3.2.0.exe', product: 'Password Manager', date: 'April 21, 2026', time: '20:05', size: '22.3 MB', device: 'Windows 11 PC', ip: '157.32.88.19', type: 'licensed' },
-  { id: 4, user: 'Sneha Iyer', email: 'sneha.i@example.com', fileName: 'WindowsCleanerPro-v2.5.1.exe', product: 'Windows Cleaner Pro', date: 'April 21, 2026', time: '09:47', size: '45.2 MB', device: 'Windows 10 Desktop', ip: '202.83.17.55', type: 'free' },
-  { id: 5, user: 'Amit Patel', email: 'amit.p@example.com', fileName: 'MSGtoPDF-v4.0.2.exe', product: 'MSG to PDF Converter', date: 'April 20, 2026', time: '16:21', size: '28.4 MB', device: 'Windows 11 Laptop', ip: '117.193.220.41', type: 'free' },
-  { id: 6, user: 'Priya Nair', email: 'priya.n@example.com', fileName: 'DataRecovery-v5.1.0.exe', product: 'Data Recovery Tool', date: 'April 20, 2026', time: '08:55', size: '52.8 MB', device: 'Windows 11 PC', ip: '106.51.78.203', type: 'free' },
-  { id: 7, user: 'Rahul Singh', email: 'rahul.s@example.com', fileName: 'PasswordManager-v3.1.5.exe', product: 'Password Manager', date: 'April 19, 2026', time: '13:09', size: '21.8 MB', device: 'Windows 10 PC', ip: '45.118.62.190', type: 'licensed' },
-  { id: 8, user: 'Megha Joshi', email: 'megha.j@example.com', fileName: 'SystemOptimizer-v1.8.0.exe', product: 'System Optimizer', date: 'April 19, 2026', time: '10:14', size: '38.7 MB', device: 'Windows 11 Laptop', ip: '152.58.34.77', type: 'free' },
-  { id: 9, user: 'Vikas Gupta', email: 'vikas.g@example.com', fileName: 'WindowsCleanerPro-v2.5.0.exe', product: 'Windows Cleaner Pro', date: 'April 18, 2026', time: '19:42', size: '44.9 MB', device: 'Windows 11 PC', ip: '49.36.182.11', type: 'free' },
-  { id: 10, user: 'Neha Kapoor', email: 'neha.k@example.com', fileName: 'MSGtoPDF-v4.0.2.exe', product: 'MSG to PDF Converter', date: 'April 18, 2026', time: '07:30', size: '28.4 MB', device: 'Windows 10 Laptop', ip: '157.49.205.66', type: 'free' },
-  { id: 11, user: 'Arjun Reddy', email: 'arjun.r@example.com', fileName: 'DataRecovery-v5.1.0.exe', product: 'Data Recovery Tool', date: 'April 17, 2026', time: '22:11', size: '52.8 MB', device: 'Windows 11 PC', ip: '103.156.42.18', type: 'licensed' },
-  { id: 12, user: 'Pooja Desai', email: 'pooja.d@example.com', fileName: 'SystemOptimizer-v1.7.9.exe', product: 'System Optimizer', date: 'April 16, 2026', time: '15:38', size: '38.1 MB', device: 'Windows 10 Desktop', ip: '117.234.91.205', type: 'free' },
-];
 
 const AdminDownloads = () => {
   const [search, setSearch] = useState('');
   const [productFilter, setProductFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
+  const [allDownloads, setAllDownloads] = useState<DownloadRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const { data } = await api.get('/user/admin/downloads');
+        if (!mounted) return;
+        const rows: DownloadRecord[] = (data?.downloads || []).map((d: any) => {
+          const dt = d.createdAt ? new Date(d.createdAt) : new Date();
+          return {
+            id: d.id,
+            user: d.user || 'Unknown',
+            email: d.email || '',
+            fileName: d.fileName || '',
+            product: d.product || '',
+            productSlug: d.productSlug,
+            version: d.version,
+            date: dt.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+            time: dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }),
+            size: d.size || '—',
+            device: d.device || 'Unknown',
+            ip: d.ip || '—',
+            type: (d.type === 'licensed' ? 'licensed' : 'free') as 'free' | 'licensed',
+            createdAt: d.createdAt,
+          };
+        });
+        setAllDownloads(rows);
+      } catch (err: any) {
+        toast({
+          title: 'Failed to load downloads',
+          description: err?.response?.data?.message || err?.message || 'Please try again',
+          variant: 'destructive',
+        });
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+    return () => { mounted = false; };
+  }, []);
 
   const products = useMemo(
     () => Array.from(new Set(allDownloads.map((d) => d.product))),
-    []
+    [allDownloads]
   );
 
   const filtered = useMemo(() => {
@@ -70,12 +101,15 @@ const AdminDownloads = () => {
       const matchesType = typeFilter === 'all' || d.type === typeFilter;
       return matchesSearch && matchesProduct && matchesType;
     });
-  }, [search, productFilter, typeFilter]);
+  }, [search, productFilter, typeFilter, allDownloads]);
 
   const totalDownloads = allDownloads.length;
   const freeDownloads = allDownloads.filter((d) => d.type === 'free').length;
   const uniqueUsers = new Set(allDownloads.map((d) => d.email)).size;
-  const todayDownloads = allDownloads.filter((d) => d.date === 'April 22, 2026').length;
+  const todayStr = new Date().toDateString();
+  const todayDownloads = allDownloads.filter(
+    (d) => d.createdAt && new Date(d.createdAt).toDateString() === todayStr,
+  ).length;
 
   const exportCsv = () => {
     const headers = ['Date', 'Time', 'User', 'Email', 'File Name', 'Product', 'Size', 'Device', 'IP', 'Type'];
@@ -102,6 +136,14 @@ const AdminDownloads = () => {
       title="Download History"
       description="Complete log of every free and licensed .exe download across all users"
     >
+          {loading && (
+            <div className="flex items-center justify-center py-10 text-muted-foreground">
+              <Loader2 className="h-5 w-5 animate-spin mr-2" /> Loading downloads...
+            </div>
+          )}
+
+          {!loading && (
+          <>
           {/* Stats */}
           <div className="grid md:grid-cols-4 gap-4 mb-10">
             {stats.map((stat, idx) => {
@@ -258,6 +300,8 @@ const AdminDownloads = () => {
               </Table>
             </div>
           </motion.div>
+          </>
+          )}
     </AdminLayout>
   );
 };

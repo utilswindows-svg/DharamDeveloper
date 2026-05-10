@@ -1,4 +1,4 @@
-const { Download, Order } = require('../models');
+const { Download, Order, User } = require('../models');
 const ApiError = require('../utils/ApiError');
 
 function pickVersion(slug) {
@@ -97,5 +97,38 @@ exports.recordDownload = async (req, res, next) => {
       ipAddress: req.ip,
     });
     res.status(201).json({ success: true, download: row });
+  } catch (e) { next(e); }
+};
+
+// GET /api/user/admin/downloads — admin: full download history across users
+exports.adminListDownloads = async (req, res, next) => {
+  try {
+    const rows = await Download.findAll({
+      include: [{ model: User, as: 'user', attributes: ['id', 'name', 'email'] }],
+      order: [['createdAt', 'DESC']],
+      limit: 500,
+    });
+
+    const downloads = rows.map((d) => {
+      const order = d.orderId ? { id: d.orderId } : null;
+      return {
+        id: d.id,
+        userId: d.userId,
+        user: d.user?.name || 'Unknown',
+        email: d.user?.email || '',
+        orderId: d.orderId,
+        productSlug: d.productSlug,
+        product: d.productTitle,
+        version: d.version,
+        fileName: d.fileName,
+        size: d.fileSize,
+        device: d.device,
+        ip: d.ipAddress,
+        type: d.orderId ? 'licensed' : 'free',
+        createdAt: d.createdAt,
+      };
+    });
+
+    res.json({ success: true, downloads });
   } catch (e) { next(e); }
 };

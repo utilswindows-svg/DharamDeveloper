@@ -874,6 +874,31 @@ const swaggerSpec = {
         },
       },
     },
+    '/api/user/admin/downloads': {
+      get: {
+        tags: ['Downloads'],
+        summary: 'Admin: list every download event across all users',
+        security: [{ bearerAuth: [] }],
+        responses: {
+          '200': {
+            description: 'All download events',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean' },
+                    downloads: { type: 'array', items: { type: 'object' } },
+                  },
+                },
+              },
+            },
+          },
+          '401': { $ref: '#/components/responses/Unauthorized' },
+          '403': { description: 'Forbidden' },
+        },
+      },
+    },
 
     // ---------------- FEEDBACK ----------------
     '/api/feedback': {
