@@ -899,6 +899,45 @@ const swaggerSpec = {
         },
       },
     },
+    '/api/user/admin/users': {
+      get: {
+        tags: ['User'],
+        summary: 'Admin: list all users with download & purchase stats',
+        security: [{ bearerAuth: [] }],
+        responses: {
+          '200': {
+            description: 'List of users',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean' },
+                    users: { type: 'array', items: { type: 'object' } },
+                  },
+                },
+              },
+            },
+          },
+          '401': { $ref: '#/components/responses/Unauthorized' },
+          '403': { description: 'Forbidden' },
+        },
+      },
+    },
+    '/api/user/admin/users/{id}': {
+      get: {
+        tags: ['User'],
+        summary: 'Admin: get a user with their orders and downloads',
+        security: [{ bearerAuth: [] }],
+        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'integer' } }],
+        responses: {
+          '200': { description: 'User detail with orders and downloads' },
+          '401': { $ref: '#/components/responses/Unauthorized' },
+          '403': { description: 'Forbidden' },
+          '404': { $ref: '#/components/responses/NotFound' },
+        },
+      },
+    },
 
     // ---------------- FEEDBACK ----------------
     '/api/feedback': {
