@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CreditCard, Download, Calendar, X, Plus, Check, Trash2 } from 'lucide-react';
+import { CreditCard, Download, Calendar, X, Plus, Check, Trash2, ShieldCheck } from 'lucide-react';
 import jsPDF from 'jspdf';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -19,82 +19,6 @@ const Billing = () => {
   ]);
 
   const [showAddPaymentForm, setShowAddPaymentForm] = useState(false);
-  const [formData, setFormData] = useState({
-    cardholderName: '',
-    cardNumber: '',
-    expiryMonth: '',
-    expiryYear: '',
-    cvv: '',
-  });
-  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
-
-  const validateForm = () => {
-    const errors: Record<string, string> = {};
-
-    if (!formData.cardholderName.trim()) {
-      errors.cardholderName = 'Cardholder name is required';
-    }
-
-    if (!formData.cardNumber || formData.cardNumber.replace(/\s/g, '').length !== 16) {
-      errors.cardNumber = 'Valid 16-digit card number is required';
-    }
-
-    if (!formData.expiryMonth || !formData.expiryYear) {
-      errors.expiry = 'Expiry date is required';
-    }
-
-    if (!formData.cvv || formData.cvv.length < 3 || formData.cvv.length > 4) {
-      errors.cvv = 'Valid CVV is required';
-    }
-
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
-  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    if (formErrors[name]) {
-      setFormErrors(prev => ({ ...prev, [name]: '' }));
-    }
-  };
-
-  const formatCardNumber = (value: string) => {
-    return value.replace(/\s/g, '').replace(/(\d{4})/g, '$1 ').trim();
-  };
-
-  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatCardNumber(e.target.value);
-    if (formatted.replace(/\s/g, '').length <= 16) {
-      setFormData(prev => ({ ...prev, cardNumber: formatted }));
-    }
-  };
-
-  const handleAddPaymentMethod = () => {
-    if (!validateForm()) return;
-
-    const last4 = formData.cardNumber.slice(-4);
-    const expiry = `${formData.expiryMonth}/${formData.expiryYear}`;
-
-    const newMethod = {
-      id: Math.max(...paymentMethods.map(m => m.id), 0) + 1,
-      type: 'Credit Card',
-      name: 'Card',
-      last4,
-      expiry,
-      isDefault: paymentMethods.length === 0,
-    };
-
-    setPaymentMethods(prev => [...prev, newMethod]);
-    setShowAddPaymentForm(false);
-    setFormData({
-      cardholderName: '',
-      cardNumber: '',
-      expiryMonth: '',
-      expiryYear: '',
-      cvv: '',
-    });
-  };
 
   const handleSetDefault = (id: number) => {
     setPaymentMethods(prev =>
@@ -378,114 +302,30 @@ const Billing = () => {
                       exit={{ opacity: 0, height: 0 }}
                       className="mb-6 p-4 border border-border rounded-lg bg-gray-50"
                     >
-                      <h3 className="font-semibold mb-4">Add New Payment Method</h3>
-                      <form className="space-y-4">
-                        <div>
-                          <label className="block text-sm font-medium mb-1">Cardholder Name</label>
-                          <input
-                            type="text"
-                            name="cardholderName"
-                            value={formData.cardholderName}
-                            onChange={handleFormChange}
-                            placeholder="John Doe"
-                            className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent outline-none"
-                          />
-                          {formErrors.cardholderName && (
-                            <p className="text-xs text-red-600 mt-1">{formErrors.cardholderName}</p>
-                          )}
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium mb-1">Card Number</label>
-                          <input
-                            type="text"
-                            name="cardNumber"
-                            value={formData.cardNumber}
-                            onChange={handleCardNumberChange}
-                            placeholder="4242 4242 4242 4242"
-                            maxLength={19}
-                            className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent outline-none"
-                          />
-                          {formErrors.cardNumber && (
-                            <p className="text-xs text-red-600 mt-1">{formErrors.cardNumber}</p>
-                          )}
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-3">
-                          <div>
-                            <label className="block text-sm font-medium mb-1">Expiry Month</label>
-                            <select
-                              name="expiryMonth"
-                              value={formData.expiryMonth}
-                              onChange={handleFormChange}
-                              className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent outline-none"
-                            >
-                              <option value="">MM</option>
-                              {Array.from({ length: 12 }, (_, i) => (
-                                <option key={i + 1} value={String(i + 1).padStart(2, '0')}>
-                                  {String(i + 1).padStart(2, '0')}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium mb-1">Expiry Year</label>
-                            <select
-                              name="expiryYear"
-                              value={formData.expiryYear}
-                              onChange={handleFormChange}
-                              className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent outline-none"
-                            >
-                              <option value="">YY</option>
-                              {Array.from({ length: 10 }, (_, i) => {
-                                const year = new Date().getFullYear() + i;
-                                return (
-                                  <option key={year} value={String(year).slice(-2)}>
-                                    {String(year).slice(-2)}
-                                  </option>
-                                );
-                              })}
-                            </select>
-                          </div>
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium mb-1">CVV</label>
-                          <input
-                            type="text"
-                            name="cvv"
-                            value={formData.cvv}
-                            onChange={(e) => {
-                              if (e.target.value.length <= 4) {
-                                handleFormChange(e);
-                              }
-                            }}
-                            placeholder="123"
-                            maxLength={4}
-                            className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent outline-none"
-                          />
-                          {formErrors.cvv && (
-                            <p className="text-xs text-red-600 mt-1">{formErrors.cvv}</p>
-                          )}
-                        </div>
-
-                        <div className="flex gap-2">
-                          <button
-                            type="button"
-                            onClick={handleAddPaymentMethod}
-                            className="flex-1 px-3 py-2 bg-accent text-white rounded-lg hover:opacity-90 transition-all font-medium"
-                          >
-                            Add Payment Method
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setShowAddPaymentForm(false)}
-                            className="flex-1 px-3 py-2 border border-border rounded-lg hover:bg-gray-100 transition-colors"
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      </form>
+                      <h3 className="font-semibold mb-2 flex items-center gap-2">
+                        <ShieldCheck className="h-4 w-4 text-accent" />
+                        Add a Payment Method
+                      </h3>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        For your security, we never collect raw card details on this site.
+                        Payment methods are added through our PCI-compliant payment partner
+                        (PayPal) during checkout. Complete a purchase to save a new method.
+                      </p>
+                      <div className="flex gap-2">
+                        <a
+                          href="/"
+                          className="flex-1 px-3 py-2 bg-accent text-white rounded-lg hover:opacity-90 transition-all font-medium text-center"
+                        >
+                          Browse Products
+                        </a>
+                        <button
+                          type="button"
+                          onClick={() => setShowAddPaymentForm(false)}
+                          className="flex-1 px-3 py-2 border border-border rounded-lg hover:bg-gray-100 transition-colors"
+                        >
+                          Cancel
+                        </button>
+                      </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
