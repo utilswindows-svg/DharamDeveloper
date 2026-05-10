@@ -64,12 +64,39 @@ function loadProductsFromTs() {
       catMap[c.key] = row.id;
     }
 
-    for (const p of PRODUCTS) {
-      const { categoryKey, ...rest } = p;
-      await Product.upsert({ ...rest, categoryId: catMap[categoryKey] || null });
+    const richMap = loadProductsFromTs();
+    const slugs = Object.keys(PRODUCT_META);
+
+    for (const slug of slugs) {
+      const meta = PRODUCT_META[slug];
+      const r = richMap[slug];
+      if (!r) {
+        console.warn(`⚠️  No rich data for ${slug}, skipping.`);
+        continue;
+      }
+      const startingPrice = r.licenses?.length ? Math.min(...r.licenses.map((l) => l.price)) : null;
+      await Product.upsert({
+        slug,
+        title: r.title,
+        tagline: r.tagline,
+        description: r.description,
+        icon: meta.icon,
+        color: meta.color,
+        startingPrice,
+        categoryId: catMap[meta.categoryKey] || null,
+        featured: meta.featured,
+        sortOrder: meta.sortOrder,
+        active: true,
+        features: r.features || [],
+        steps: r.steps || [],
+        faqs: r.faqs || [],
+        systemReqs: r.systemReqs || [],
+        formats: r.formats || [],
+        licenses: r.licenses || [],
+      });
     }
 
-    console.log(`✅ Seeded ${CATEGORIES.length} categories and ${PRODUCTS.length} products`);
+    console.log(`✅ Seeded ${CATEGORIES.length} categories and ${slugs.length} products`);
     process.exit(0);
   } catch (err) {
     console.error('❌ Seed failed:', err);
