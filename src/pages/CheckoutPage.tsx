@@ -1,4 +1,4 @@
-import { useParams, useSearchParams, Navigate, Link } from "react-router-dom";
+import { useParams, useSearchParams, Navigate, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, ShieldCheck, Lock, Mail, User, Building2, Globe, MapPin, Info, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,7 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import SEO from "@/components/SEO";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
-import { api, useAppDispatch, useAppSelector } from "@/store/authStore";
+import { api, useAppDispatch, useAppSelector, loginUser } from "@/store/authStore";
 
 const CheckoutPage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -22,6 +22,7 @@ const CheckoutPage = () => {
   const product = slug ? products[slug] : undefined;
   const { toast } = useToast();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const currentUser = useAppSelector((s) => s.auth.user);
   const [billing, setBilling] = useState({
     firstName: "", lastName: "", email: "", company: "", country: "", zip: "",
@@ -71,9 +72,9 @@ const CheckoutPage = () => {
       if (data.refreshToken) localStorage.setItem("refreshToken", data.refreshToken);
       if (data.user) {
         localStorage.setItem("user", JSON.stringify(data.user));
-        // Update redux store
+        // Update redux store using the matching async-thunk action type
         dispatch({
-          type: "auth/login/fulfilled",
+          type: loginUser.fulfilled.type,
           payload: { user: data.user, accessToken: data.accessToken, refreshToken: data.refreshToken },
         });
       }
