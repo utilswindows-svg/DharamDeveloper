@@ -5,7 +5,12 @@ import { useDispatch, useSelector, TypedUseSelectorHook } from 'react-redux';
 // ============================================================
 // Axios instance
 // ============================================================
+<<<<<<< HEAD
 const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 'http://https://api.windowsutils.com/api';
+=======
+
+const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000/api';
+>>>>>>> fb6ce747a51c0890296f50fda99b8f9619c40c46
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
@@ -53,7 +58,6 @@ interface ForgotPayload { email?: string; phone?: string; channel?: 'email' | 's
 interface VerifyOtpPayload { email?: string; phone?: string; otp: string; channel?: 'email' | 'sms'; }
 interface ResetPasswordPayload { email?: string; phone?: string; newPassword: string; channel?: 'email' | 'sms'; }
 interface SocialLoginPayload { provider: 'google' | 'facebook'; accessToken: string; }
-
 // ============================================================
 // Helpers
 // ============================================================
@@ -150,6 +154,7 @@ export const socialLogin = createAsyncThunk(
     }
   }
 );
+<<<<<<< HEAD
 
 // Calls backend to revoke refresh tokens, then clears local auth state.
 export const logoutUser = createAsyncThunk(
@@ -165,6 +170,8 @@ export const logoutUser = createAsyncThunk(
   }
 );
 
+=======
+>>>>>>> fb6ce747a51c0890296f50fda99b8f9619c40c46
 // ============================================================
 // Slice
 // ============================================================
@@ -205,6 +212,7 @@ const authSlice = createSlice({
     const handleAuthFulfilled = (state: AuthState, action: PayloadAction<any>) => {
       state.loading = false;
       const { user, accessToken, refreshToken: rt, message } = action.payload || {};
+      if (user) state.user = user;
       if (user) {
         state.user = user;
         localStorage.setItem('user', JSON.stringify(user));
