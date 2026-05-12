@@ -5,13 +5,7 @@ import { useDispatch, useSelector, TypedUseSelectorHook } from 'react-redux';
 // ============================================================
 // Axios instance
 // ============================================================
-<<<<<<< HEAD
-const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 'http://https://api.windowsutils.com/api';
-=======
-
-const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000/api';
->>>>>>> fb6ce747a51c0890296f50fda99b8f9619c40c46
-
+const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 'https://api.windowsutils.com/api';
 export const api = axios.create({
   baseURL: API_BASE_URL,
   headers: { 'Content-Type': 'application/json' },
@@ -154,7 +148,6 @@ export const socialLogin = createAsyncThunk(
     }
   }
 );
-<<<<<<< HEAD
 
 // Calls backend to revoke refresh tokens, then clears local auth state.
 export const logoutUser = createAsyncThunk(
@@ -169,9 +162,6 @@ export const logoutUser = createAsyncThunk(
     return true;
   }
 );
-
-=======
->>>>>>> fb6ce747a51c0890296f50fda99b8f9619c40c46
 // ============================================================
 // Slice
 // ============================================================
