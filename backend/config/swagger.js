@@ -7,7 +7,7 @@ const swaggerSpec = {
       'Complete API documentation for authentication, user profile, settings, two-factor auth, catalog, orders, PayPal payments, downloads, and feedback.',
   },
   servers: [
-    { url: 'http://localhost:5000', description: 'Local development' },
+    { url: 'https://api.windowsutils.com', description: 'Local development' },
     { url: 'https://windowsutils.com', description: 'Production' },
   ],
   tags: [
