@@ -136,10 +136,10 @@ export const products: Record<string, ProductData> = {
     systemReqs: ["Windows 11, 10, 8.1, 8, 7 (32-bit & 64-bit)", "1 GHz processor or faster", "512 MB RAM (1 GB recommended)", "50 MB free disk space for installation", "Microsoft .NET Framework 4.5 or above"],
     formats: ["MBOX", "MBX", "MBS"],
     licenses: [
-      { name: "Personal License", price: 29, machines: "1 Machine", desc: "The Personal License can be installed on one machine (desktop or laptop)." },
-      { name: "Business License", price: 49, originalPrice: 78, machines: "Up to 100 Machines", desc: "The Business License can be installed on up to 100 machines within your organization." },
-      { name: "Enterprise License", price: 149, originalPrice: 298, machines: "Up to 500 Machines", desc: "The Enterprise License can be installed on up to 500 machines enterprise-wide." },
-      { name: "Technician License", price: 199, originalPrice: 398, machines: "Unlimited Machines", desc: "The Technician License allows unlimited installations for service providers and IT professionals." },
+      { name: "Personal License", price: 19, machines: "1 Machine", desc: "The Personal License can be installed on one machine (desktop or laptop)." },
+      { name: "Business License", price: 29, originalPrice: 78, machines: "Up to 100 Machines", desc: "The Business License can be installed on up to 100 machines within your organization." },
+      { name: "Enterprise License", price: 49, originalPrice: 298, machines: "Up to 500 Machines", desc: "The Enterprise License can be installed on up to 500 machines enterprise-wide." },
+      { name: "Technician License", price: 99, originalPrice: 398, machines: "Unlimited Machines", desc: "The Technician License allows unlimited installations for service providers and IT professionals." },
     ],
   },
   "pst-migration": {
@@ -315,10 +315,10 @@ export const products: Record<string, ProductData> = {
     systemReqs: ["Windows 11, 10, 8.1, 8, 7 (32-bit & 64-bit)", "1 GHz processor or faster", "512 MB RAM (1 GB recommended)", "100 MB free disk space for installation", "Microsoft .NET Framework 4.5 or above"],
     formats: ["PDF"],
     licenses: [
-      { name: "Personal License", price: 39, machines: "1 Machine", desc: "The Personal License can be installed on one machine (desktop or laptop)." },
-      { name: "Business License", price: 69, originalPrice: 118, machines: "Up to 100 Machines", desc: "The Business License can be installed on up to 100 machines within your organization." },
-      { name: "Enterprise License", price: 179, originalPrice: 348, machines: "Up to 500 Machines", desc: "The Enterprise License can be installed on up to 500 machines enterprise-wide." },
-      { name: "Technician License", price: 249, originalPrice: 498, machines: "Unlimited Machines", desc: "The Technician License allows unlimited installations for service providers and IT professionals." },
+      { name: "Personal License", price: 19, machines: "1 Machine", desc: "The Personal License can be installed on one machine (desktop or laptop)." },
+      { name: "Business License", price: 29, originalPrice: 118, machines: "Up to 100 Machines", desc: "The Business License can be installed on up to 100 machines within your organization." },
+      { name: "Enterprise License", price: 49, originalPrice: 348, machines: "Up to 500 Machines", desc: "The Enterprise License can be installed on up to 500 machines enterprise-wide." },
+      { name: "Technician License", price: 99, originalPrice: 498, machines: "Unlimited Machines", desc: "The Technician License allows unlimited installations for service providers and IT professionals." },
     ],
   },
   "pc-optimizer": {

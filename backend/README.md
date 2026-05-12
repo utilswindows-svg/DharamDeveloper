@@ -106,31 +106,31 @@ All under `/api`.
 
 ### Example flow — Email OTP
 ```bash
-curl -X POST http://localhost:5000/api/auth/forgot-password \
+curl -X POST https://api.windowsutils.com/api/auth/forgot-password \
   -H 'Content-Type: application/json' \
   -d '{"email":"jane@example.com"}'
 # → Email arrives in Jane's inbox with a 6-digit code
 
-curl -X POST http://localhost:5000/api/auth/verify-otp \
+curl -X POST https://api.windowsutils.com/api/auth/verify-otp \
   -H 'Content-Type: application/json' \
   -d '{"email":"jane@example.com","otp":"482917"}'
 
-curl -X POST http://localhost:5000/api/auth/reset-password \
+curl -X POST https://api.windowsutils.com/api/auth/reset-password \
   -H 'Content-Type: application/json' \
   -d '{"email":"jane@example.com","newPassword":"NewPassw0rd!"}'
 ```
 
 ### Example flow — SMS OTP
 ```bash
-curl -X POST http://localhost:5000/api/auth/forgot-password \
+curl -X POST https://api.windowsutils.com/api/auth/forgot-password \
   -H 'Content-Type: application/json' \
   -d '{"phone":"+14155552671","channel":"sms"}'
 
-curl -X POST http://localhost:5000/api/auth/verify-otp \
+curl -X POST https://api.windowsutils.com/api/auth/verify-otp \
   -H 'Content-Type: application/json' \
   -d '{"phone":"+14155552671","otp":"482917","channel":"sms"}'
 
-curl -X POST http://localhost:5000/api/auth/reset-password \
+curl -X POST https://api.windowsutils.com/api/auth/reset-password \
   -H 'Content-Type: application/json' \
   -d '{"phone":"+14155552671","newPassword":"NewPassw0rd!","channel":"sms"}'
 ```

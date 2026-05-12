@@ -105,7 +105,7 @@ const ProductPage = () => {
     );
   }
 
-  if (notFound || !product) return <Navigate to="/products" replace />;
+  // if (notFound || !product) return <Navigate to="/products" replace />;
 
   const minPrice = product.licenses?.length
     ? Math.min(...product.licenses.map((l) => l.price))
@@ -120,7 +120,7 @@ const ProductPage = () => {
       }
     : undefined;
 
-  const apiBaseEarly = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000/api';
+  const apiBaseEarly = (import.meta as any).env?.VITE_API_URL || 'https://api.windowsutils.com/api';
   const productSchema: Record<string, any> = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
@@ -129,7 +129,7 @@ const ProductPage = () => {
     applicationCategory: "UtilitiesApplication",
     operatingSystem: "Windows",
     image: `${apiBaseEarly}/catalog/products/${product.slug}/og.svg`,
-    url: `https://windowsutils.lovable.app/products/${product.slug}`,
+    url: `https://windowsutils.com/products/${product.slug}`,
     ...(minPrice !== undefined && {
       offers: {
         "@type": "Offer",

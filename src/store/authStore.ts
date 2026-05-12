@@ -5,7 +5,7 @@ import { useDispatch, useSelector, TypedUseSelectorHook } from 'react-redux';
 // ============================================================
 // Axios instance
 // ============================================================
-const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 'http://https://api.windowsutils.com/api';
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
