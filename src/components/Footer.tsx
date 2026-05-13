@@ -26,7 +26,7 @@ const Footer = () => (
               { name: "PDF Unlocker", slug: "pdf-tools" },
             ].map(p => (
               <li key={p.slug}>
-                <Link to={`/products/${p.slug}`} className="hover:text-hero-foreground transition-colors">{p.name}</Link>
+                <Link to={`/software/${p.slug}`} className="hover:text-hero-foreground transition-colors">{p.name}</Link>
               </li>
             ))}
           </ul>

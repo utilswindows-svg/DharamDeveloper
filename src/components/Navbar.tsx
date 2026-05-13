@@ -14,7 +14,7 @@ const productCategories = [
     color: "text-rose-500",
     bg: "bg-rose-500/10",
     items: [
-      { name: "PDF Unlocker", desc: "Unlock, merge & convert PDFs", href: "/products/pdf-tools" },
+      { name: "PDF Unlocker", desc: "Unlock, merge & convert PDFs", href: "/software/pdf-tools" },
     ],
   },
    {
@@ -23,7 +23,7 @@ const productCategories = [
     color: "text-blue-500",
     bg: "bg-blue-500/10",
     items: [
-      { name: "MBox to PDF", desc: "Convert MBOX emails to PDF", href: "/products/mbox-to-pdf" },
+      { name: "MBox to PDF", desc: "Convert MBOX emails to PDF", href: "/software/mbox-to-pdf" },
     ],
   },
 ];
