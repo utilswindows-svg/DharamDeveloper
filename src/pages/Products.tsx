@@ -110,7 +110,7 @@ const Products: React.FC = () => {
       <SEO
         title="All Products — WindowsUtils Software Catalog"
         description="Browse the complete WindowsUtils catalog: email migration, PDF tools, data recovery, and PC optimization software for Windows."
-        path="/products"
+        path="/software/tools"
         keywords="windows software, email migration, pdf tools, data recovery, pc optimizer"
         type="website"
       />
@@ -215,7 +215,7 @@ const Products: React.FC = () => {
                         transition={{ duration: 0.4, delay: i * 0.05 }}
                       >
                         <Link
-                          to={`/products/${p.slug}`}
+                          to={`/software/${p.slug}`}
                           className={`group flex h-full flex-col rounded-xl border ${accent} bg-card p-6 card-hover`}
                         >
                           <div className={`mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-muted ${accent.split(' ').find((c) => c.startsWith('text-'))}`}>

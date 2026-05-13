@@ -38,7 +38,7 @@ const BuyPage = () => {
       {/* Hero */}
       <section className="bg-hero text-hero-foreground py-10">
         <div className="section-container">
-          <Link to={`/products/${slug}`} className="inline-flex items-center gap-1.5 text-xs text-hero-muted hover:text-hero-foreground transition-colors mb-6">
+          <Link to={`/software/${slug}`} className="inline-flex items-center gap-1.5 text-xs text-hero-muted hover:text-hero-foreground transition-colors mb-6">
             <ArrowLeft className="h-3.5 w-3.5" /> Back to {product.title}
           </Link>
           <div className="text-center">

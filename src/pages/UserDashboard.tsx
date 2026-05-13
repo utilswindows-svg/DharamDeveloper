@@ -230,7 +230,7 @@ const UserDashboard = () => {
             <h2 className="text-2xl font-bold mb-6">Quick Actions</h2>
             <div className="grid md:grid-cols-2 gap-4">
               <Link
-                to="/products"
+                to="/software/tools"
                 className="flex items-center gap-4 p-4 border border-border rounded-lg hover:bg-accent/5 transition-colors"
               >
                 <Download className="h-5 w-5 text-accent" />

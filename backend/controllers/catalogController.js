@@ -162,7 +162,7 @@ exports.getProductOgImage = async (req, res, next) => {
 
   <!-- Brand -->
   <text x="1120" y="585" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" fill="#ffffff" text-anchor="end">WindowsUtils</text>
-  <text x="1120" y="610" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#94a3b8" text-anchor="end">windowsutils.lovable.app/products/${escapeXml(product.slug)}</text>
+  <text x="1120" y="610" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#94a3b8" text-anchor="end">windowsutils.com/software/${escapeXml(product.slug)}</text>
 </svg>`;
 
     res.set('Content-Type', 'image/svg+xml; charset=utf-8');

@@ -10,7 +10,6 @@ import HelpCenter from "./pages/HelpCenter.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import ProductPage from "./pages/ProductPage.tsx";
 import Products from "./pages/Products.tsx";
-import SoftwareTools from "./pages/SoftwareTools.tsx";
 import BuyPage from "./pages/BuyPage.tsx";
 import CheckoutPage from "./pages/CheckoutPage.tsx";
 import Eula from "./pages/Eula.tsx";
@@ -55,14 +54,8 @@ const App = () => (
           <Route path="/about" element={<About />} />
           <Route path="/support" element={<Support />} />
           <Route path="/help" element={<HelpCenter />} />
-<<<<<<< HEAD
           <Route path="/software" element={<Products />} />
           <Route path="/software/:slug" element={<ProductPage />} />
-=======
-          <Route path="/products" element={<Products />} />
-          <Route path="/products/:slug" element={<ProductPage />} />
-          <Route path="/software/tools" element={<SoftwareTools />} />
->>>>>>> 274f309552b9f9606378c09ede7eedb28127c71f
           <Route path="/buy/:slug" element={<BuyPage />} />
           <Route path="/checkout/:slug" element={<CheckoutPage />} />
           <Route path="/eula" element={<Eula />} />

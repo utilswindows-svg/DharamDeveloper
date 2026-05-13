@@ -128,8 +128,8 @@ const ProductPage = () => {
     description: product.description,
     applicationCategory: "UtilitiesApplication",
     operatingSystem: "Windows",
-    image: `${apiBaseEarly}/catalog/products/${product.slug}/og.svg`,
-    url: `https://windowsutils.com/products/${product.slug}`,
+    image: `${apiBaseEarly}/catalog/software/${product.slug}/og.svg`,
+    url: `https://windowsutils.com/software/${product.slug}`,
     ...(minPrice !== undefined && {
       offers: {
         "@type": "Offer",

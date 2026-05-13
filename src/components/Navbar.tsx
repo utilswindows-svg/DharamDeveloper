@@ -32,7 +32,6 @@ const productLinks = productCategories.flatMap(c => c.items);
 
 const navLinks = [
   { name: "Home", href: "/" },
-  { name: "View all products", href: "/software/tools" },
   { name: "About Us", href: "/about" },
   { name: "Support", href: "/support" },
   { name: "Help Center", href: "/help" },
