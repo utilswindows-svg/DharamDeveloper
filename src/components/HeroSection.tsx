@@ -59,7 +59,15 @@ const HeroSection = () => {
   return (
     <section className="relative overflow-hidden">
       <div className="absolute inset-0">
-        <img src={heroBg} alt="" className="h-full w-full object-cover" width={1920} height={800} />
+        <img
+          src={heroBg}
+          alt=""
+          className="h-full w-full object-cover"
+          width={1920}
+          height={800}
+          fetchPriority="high"
+          decoding="async"
+        />
         <div className="absolute inset-0 hero-gradient opacity-90" />
       </div>
 

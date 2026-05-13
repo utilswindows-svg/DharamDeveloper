@@ -32,6 +32,7 @@ const productLinks = productCategories.flatMap(c => c.items);
 
 const navLinks = [
   { name: "Home", href: "/" },
+  { name: "View all products", href: "/software/tools" },
   { name: "About Us", href: "/about" },
   { name: "Support", href: "/support" },
   { name: "Help Center", href: "/help" },
@@ -136,7 +137,7 @@ const Navbar = () => {
                       <p className="text-xs text-muted-foreground">Trusted by <span className="font-semibold text-foreground">1M+ users</span> worldwide</p>
                     </div>
                     <Link
-                      to="/support"
+                      to="/software/tools"
                       onClick={() => setProductsOpen(false)}
                       className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:gap-2.5 transition-all"
                     >
