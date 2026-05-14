@@ -127,7 +127,7 @@ const ProductPage = () => {
     : undefined;
 
   const apiBaseEarly = (import.meta as any).env?.VITE_API_URL || 'https://api.windowsutils.com/api';
-  const siteBase = ((import.meta as any).env?.VITE_BASE_URL || 'https://windowsutils.lovable.app').replace(/\/$/, '');
+  const siteBase = ((import.meta as any).env?.VITE_BASE_URL || 'https://windowsutils.com').replace(/\/$/, '');
   const productSchema: Record<string, any> = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
