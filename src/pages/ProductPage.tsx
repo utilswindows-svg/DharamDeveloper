@@ -33,7 +33,7 @@ interface ApiProduct {
 const ProductPage = () => {
   const { slug } = useParams<{ slug: string }>();
   const [apiProduct, setApiProduct] = useState<ApiProduct | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => !localProducts[String(useParamsSlugSafe())] );
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
