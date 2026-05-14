@@ -33,11 +33,17 @@ interface ApiProduct {
 const ProductPage = () => {
   const { slug } = useParams<{ slug: string }>();
   const [apiProduct, setApiProduct] = useState<ApiProduct | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => !localProducts[String(slug)]);
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
     if (!slug) return;
+    // If we have full local data for this slug, skip the API call to avoid
+    // hitting backend endpoints that may not be seeded yet (prevents 404 noise).
+    if (localProducts[slug]) {
+      setLoading(false);
+      return;
+    }
     let mounted = true;
     setLoading(true);
     setNotFound(false);
