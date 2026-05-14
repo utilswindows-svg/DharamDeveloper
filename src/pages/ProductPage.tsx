@@ -121,6 +121,7 @@ const ProductPage = () => {
     : undefined;
 
   const apiBaseEarly = (import.meta as any).env?.VITE_API_URL || 'https://api.windowsutils.com/api';
+  const siteBase = ((import.meta as any).env?.VITE_BASE_URL || 'https://windowsutils.lovable.app').replace(/\/$/, '');
   const productSchema: Record<string, any> = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
@@ -129,7 +130,7 @@ const ProductPage = () => {
     applicationCategory: "UtilitiesApplication",
     operatingSystem: "Windows",
     image: `${apiBaseEarly}/catalog/software/${product.slug}/og.svg`,
-    url: `https://windowsutils.com/software/${product.slug}`,
+    url: `${siteBase}/software/${product.slug}`,
     ...(minPrice !== undefined && {
       offers: {
         "@type": "Offer",
