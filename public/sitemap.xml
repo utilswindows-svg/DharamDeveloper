@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://windowsutils.lovable.app/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
-  <url><loc>https://windowsutils.lovable.app/about</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://windowsutils.lovable.app/support</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://windowsutils.lovable.app/help</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://windowsutils.lovable.app/software</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://windowsutils.lovable.app/software/pdf-tools</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://windowsutils.lovable.app/software/mbox-to-pdf</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://windowsutils.lovable.app/software/pst-migration</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://windowsutils.lovable.app/software/msg-migration</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://windowsutils.lovable.app/software/msg-to-pdf</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://windowsutils.lovable.app/software/data-recovery</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://windowsutils.lovable.app/software/pc-optimizer</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://windowsutils.lovable.app/eula</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
-  <url><loc>https://windowsutils.lovable.app/privacy</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
-  <url><loc>https://windowsutils.lovable.app/refund-policy</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
-  <url><loc>https://windowsutils.lovable.app/quality-policy</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
-  <url><loc>https://windowsutils.lovable.app/legal</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://windowsutils.com/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://windowsutils.com/about</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://windowsutils.com/support</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://windowsutils.com/help</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://windowsutils.com/software</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://windowsutils.com/software/pdf-tools</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://windowsutils.com/software/mbox-to-pdf</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://windowsutils.com/software/pst-migration</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://windowsutils.com/software/msg-migration</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://windowsutils.com/software/msg-to-pdf</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://windowsutils.com/software/data-recovery</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://windowsutils.com/software/pc-optimizer</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://windowsutils.com/eula</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://windowsutils.com/privacy</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://windowsutils.com/refund-policy</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://windowsutils.com/quality-policy</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://windowsutils.com/legal</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
 </urlset>

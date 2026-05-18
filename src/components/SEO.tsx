@@ -24,7 +24,6 @@ const SEO = ({
   type = "website",
   keywords,
   schema,
-  noIndex,
 }: SEOProps) => {
   const url = `${SITE_URL}${path}`;
   const fullTitle = title.includes(SITE_NAME) ? title : `${title} | ${SITE_NAME}`;
@@ -32,8 +31,10 @@ const SEO = ({
 
   const orgSchema = {
     "@context": "https://schema.org",
-    "@type": "Organization",
+    "@type": "SoftwareApplication",
     name: SITE_NAME,
+    applicationCategory: "UtilitiesApplication",
+    operatingSystem: "Windows",
     url: SITE_URL,
     logo: `${SITE_URL}/favicon.ico`,
     sameAs: [
@@ -51,7 +52,7 @@ const SEO = ({
       <meta name="description" content={description} />
       {keywords && <meta name="keywords" content={keywords} />}
       <link rel="canonical" href={url} />
-      {noIndex && <meta name="robots" content="noindex, nofollow" />}
+      <meta name="robots" content="index, follow" />
 
       {/* Open Graph (Facebook, LinkedIn, WhatsApp) */}
       <meta property="og:type" content={type} />
